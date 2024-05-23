@@ -134,7 +134,7 @@ export const textWysiwyg = ({
       let textElementWidth = updatedTextElement.width;
       // Set to element height by default since that's
       // what is going to be used for unbounded text
-      const textElementHeight = updatedTextElement.height;
+      let textElementHeight = updatedTextElement.height;
 
       if (container && updatedTextElement.containerId) {
         if (isArrowElement(container)) {
@@ -229,6 +229,9 @@ export const textWysiwyg = ({
       } else {
         textElementWidth += 0.5;
       }
+
+      // add 5% buffer otherwise it causes wysiwyg to jump
+      textElementHeight *= 1.05;
 
       // Make sure text editor height doesn't go beyond viewport
       const editorMaxHeight =

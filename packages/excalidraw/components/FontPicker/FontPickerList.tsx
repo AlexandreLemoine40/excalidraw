@@ -16,7 +16,7 @@ import DropdownMenuItem, {
   DropDownMenuItemBadge,
 } from "../dropdownMenu/DropdownMenuItem";
 import { type FontFamilyValues } from "../../element/types";
-import { type Node, arrayToList } from "../../utils";
+import { type Node, arrayToList, getFontFamilyString } from "../../utils";
 import {
   FreedrawIcon,
   FontFamilyNormalIcon,
@@ -26,7 +26,7 @@ import { t } from "../../i18n";
 import { fontPickerKeyHandler } from "./keyboardNavHandlers";
 
 export interface FontDescriptor {
-  value?: number;
+  value: number;
   icon?: JSX.Element;
   text?: string;
   badge?: {
@@ -35,21 +35,34 @@ export interface FontDescriptor {
   };
 }
 
-// FIXME_FONTS: this cannot be static as the prev / next references change on each input
-export const ALL_FONTS: Map<number, Node<FontDescriptor>> = arrayToList([
+export const getAllFonts = () => [
   {
-    value: FONT_FAMILY.Virgil,
-    icon: FreedrawIcon,
-    text: "Virgil 1",
+    value: FONT_FAMILY.Assistant,
+    icon: FontFamilyNormalIcon,
+    text: "Assistant",
     badge: {
-      type: DropDownMenuItemBadgeType.RED,
-      placeholder: t("fontList.badge.old"),
+      type: DropDownMenuItemBadgeType.GREEN,
+      placeholder: t("fontList.badge.new"),
     },
   },
   {
-    value: FONT_FAMILY.Virgil2,
-    icon: FreedrawIcon,
-    text: "Virgil 2",
+    value: FONT_FAMILY.Bangers,
+    icon: FontFamilyNormalIcon,
+    text: "Bangers",
+    badge: {
+      type: DropDownMenuItemBadgeType.GREEN,
+      placeholder: t("fontList.badge.new"),
+    },
+  },
+  {
+    value: FONT_FAMILY.Cascadia,
+    icon: FontFamilyCodeIcon,
+    text: "Cascadia",
+  },
+  {
+    value: FONT_FAMILY.ComicShanns,
+    icon: FontFamilyCodeIcon,
+    text: "Comic Shanns",
     badge: {
       type: DropDownMenuItemBadgeType.GREEN,
       placeholder: t("fontList.badge.new"),
@@ -61,17 +74,60 @@ export const ALL_FONTS: Map<number, Node<FontDescriptor>> = arrayToList([
     text: "Helvetica",
   },
   {
-    value: FONT_FAMILY.Cascadia,
-    icon: FontFamilyCodeIcon,
-    text: "Cascadia",
+    value: FONT_FAMILY.Nunito,
+    icon: FontFamilyNormalIcon,
+    text: "Nunito",
+    badge: {
+      type: DropDownMenuItemBadgeType.GREEN,
+      placeholder: t("fontList.badge.new"),
+    },
   },
-]).reduce((acc, curr) => {
-  acc.set(curr.value, curr);
-  return acc;
-}, new Map());
+  {
+    value: FONT_FAMILY.Pacifico,
+    icon: FontFamilyNormalIcon,
+    text: "Pacifico",
+    badge: {
+      type: DropDownMenuItemBadgeType.GREEN,
+      placeholder: t("fontList.badge.new"),
+    },
+  },
+  {
+    value: FONT_FAMILY.PermanentMarker,
+    icon: FontFamilyNormalIcon,
+    text: "PermanentMarker",
+    badge: {
+      type: DropDownMenuItemBadgeType.GREEN,
+      placeholder: t("fontList.badge.new"),
+    },
+  },
+  {
+    value: FONT_FAMILY.TeXGyreHeros,
+    icon: FontFamilyNormalIcon,
+    text: "TeX Gyre Heros",
+    badge: {
+      type: DropDownMenuItemBadgeType.GREEN,
+      placeholder: t("fontList.badge.new"),
+    },
+  },
+  {
+    value: FONT_FAMILY.Virgil2,
+    icon: FreedrawIcon,
+    text: "Virgil",
+    badge: {
+      type: DropDownMenuItemBadgeType.GREEN,
+      placeholder: t("fontList.badge.new"),
+    },
+  },
+  {
+    value: FONT_FAMILY.Virgil,
+    icon: FreedrawIcon,
+    text: "Virgil Classic",
+  },
+];
 
+// FIXME_FONTS: dumb for now, might work just on filter fonts & on top of map
 export const getFontByValue = (fontFamilyValue: number) => {
-  return ALL_FONTS.get(fontFamilyValue);
+  return getAllFonts().find((font) => font.value === fontFamilyValue);
 };
 
 export const getUnfocusedFont = (filteredFonts: FontDescriptor[]) =>
@@ -90,16 +146,18 @@ interface FontPickerListProps {
 export const FontPickerList = React.memo(
   ({ selectedFontFamily, onPick, onClose }: FontPickerListProps) => {
     const { container } = useExcalidrawContainer();
-    const allFonts = useMemo(() => [...ALL_FONTS.values()], []);
     const [searchTerm, setSearchTerm] = useState("");
     const inputRef = useRef<HTMLInputElement>(null);
 
+    // FIXME_FONTS: could be more optimized
     const filteredFonts = useMemo(
       () =>
-        allFonts.filter((font) =>
-          font.text?.toLowerCase().includes(searchTerm),
+        arrayToList(
+          getAllFonts().filter((font) =>
+            font.text?.toLowerCase().includes(searchTerm),
+          ),
         ),
-      [allFonts, searchTerm],
+      [searchTerm],
     );
 
     const [focusedFont, setFocusedFont] = useState(
@@ -151,8 +209,10 @@ export const FontPickerList = React.memo(
           {filteredFonts.map((font, index) => (
             <DropdownMenuItem
               key={index}
-              icon={font.icon}
               value={font.value}
+              style={{
+                fontFamily: getFontFamilyString({ fontFamily: font.value }),
+              }}
               selected={font.value === selectedFontFamily}
               focus={font.value === focusedFont?.value}
               onClick={(e) => onPick(Number(e.currentTarget.value))}

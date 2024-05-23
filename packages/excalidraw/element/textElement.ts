@@ -327,7 +327,8 @@ export const getVerticalOffset = (
     FONT_METRICS[fontFamily] || FONT_METRICS[FONT_FAMILY.Helvetica];
 
   const fontSizeEm = fontSize / unitsPerEm;
-  const lineGap = lineHeightPx - fontSizeEm * ascender + fontSizeEm * descender;
+  const lineGap =
+    (lineHeightPx - fontSizeEm * ascender + fontSizeEm * descender) / 2;
 
   const verticalOffset = fontSizeEm * ascender + lineGap;
   return verticalOffset;
@@ -878,57 +879,89 @@ const DEFAULT_LINE_HEIGHT = {
   [FONT_FAMILY.Virgil2]: 1.25 as ExcalidrawTextElement["lineHeight"],
   // ~1.15 is the average for Helvetica in WebKit and Blink.
   [FONT_FAMILY.Helvetica]: 1.15 as ExcalidrawTextElement["lineHeight"],
+  [FONT_FAMILY.TeXGyreHeros]: 1.15 as ExcalidrawTextElement["lineHeight"],
   // ~1.2 is the average for Cascadia in WebKit and Blink, and kinda Gecko too
   [FONT_FAMILY.Cascadia]: 1.2 as ExcalidrawTextElement["lineHeight"],
+  [FONT_FAMILY.ComicShanns]: 1.2 as ExcalidrawTextElement["lineHeight"],
 };
 
-/** OS/2 sTypoAscender, https://learn.microsoft.com/en-us/typography/opentype/spec/os2#stypoascender */
-type sTypoAscender = number & MakeBrand<"sTypoAscender">;
+/** hhea.ascender */
+type ascender = number & MakeBrand<"ascender">;
 
-/** OS/2 sTypoDescender, https://learn.microsoft.com/en-us/typography/opentype/spec/os2#stypodescender */
-type sTypoDescender = number & MakeBrand<"sTypoDescender">;
+/** hhea.descender */
+type descender = number & MakeBrand<"descender">;
 
-/** head.unitsPerEm, usually either 1000 or 2048 */
-type unitsPerEm = number & MakeBrand<"unitsPerEm">;
+/** head.unitsPerEm */
+type unitsPerEm = 1000 | 1024 | 2048;
 
 /**
  * Hardcoded metrics for default fonts, read by https://opentype.js.org/font-inspector.html.
- * For custom fonts, read these metrics from OS/2 table and extend this object.
+ * For custom fonts, read these metrics from head & hhea tables and extend this object.
  *
  * WARN: opentype does NOT open WOFF2 correctly, make sure to convert WOFF2 to TTF first.
  */
 export const FONT_METRICS: Record<
   number,
   {
-    unitsPerEm: number;
-    ascender: sTypoAscender;
-    descender: sTypoDescender;
+    unitsPerEm: unitsPerEm;
+    ascender: ascender;
+    descender: descender;
   }
 > = {
   [FONT_FAMILY.Virgil]: {
-    unitsPerEm: 1000 as unitsPerEm,
-    ascender: 886 as sTypoAscender,
-    descender: -374 as sTypoDescender,
+    unitsPerEm: 1000,
+    ascender: 886 as ascender,
+    descender: -374 as descender,
   },
   [FONT_FAMILY.Virgil2]: {
-    unitsPerEm: 1000 as unitsPerEm,
-    ascender: 886 as sTypoAscender,
-    descender: -374 as sTypoDescender,
+    unitsPerEm: 1000,
+    ascender: 886 as ascender,
+    descender: -374 as descender,
   },
   [FONT_FAMILY.Helvetica]: {
-    unitsPerEm: 2048 as unitsPerEm,
-    ascender: 1577 as sTypoAscender,
-    descender: -471 as sTypoDescender,
+    unitsPerEm: 2048,
+    ascender: 1577 as ascender,
+    descender: -471 as descender,
   },
   [FONT_FAMILY.Cascadia]: {
-    unitsPerEm: 2048 as unitsPerEm,
-    ascender: 1977 as sTypoAscender,
-    descender: -480 as sTypoDescender,
+    unitsPerEm: 2048,
+    ascender: 1977 as ascender,
+    descender: -480 as descender,
   },
   [FONT_FAMILY.Assistant]: {
-    unitsPerEm: 1000 as unitsPerEm,
-    ascender: 1021 as sTypoAscender,
-    descender: -287 as sTypoDescender,
+    unitsPerEm: 1000,
+    ascender: 1021 as ascender,
+    descender: -287 as descender,
+  },
+  [FONT_FAMILY.Nunito]: {
+    unitsPerEm: 1000,
+    ascender: 1011 as ascender,
+    descender: -353 as descender,
+  },
+  [FONT_FAMILY.ComicShanns]: {
+    unitsPerEm: 1000,
+    ascender: 750 as ascender,
+    descender: -250 as descender,
+  },
+  [FONT_FAMILY.TeXGyreHeros]: {
+    unitsPerEm: 1000,
+    ascender: 1148 as ascender,
+    descender: -284 as descender,
+  },
+  [FONT_FAMILY.Bangers]: {
+    unitsPerEm: 1000,
+    ascender: 883 as ascender,
+    descender: -181 as descender,
+  },
+  [FONT_FAMILY.Pacifico]: {
+    unitsPerEm: 1000,
+    ascender: 1303 as ascender,
+    descender: -453 as descender,
+  },
+  [FONT_FAMILY.PermanentMarker]: {
+    unitsPerEm: 1024,
+    ascender: 1136 as ascender,
+    descender: -325 as descender,
   },
 };
 
@@ -936,5 +969,6 @@ export const getDefaultLineHeight = (fontFamily: FontFamilyValues) => {
   if (fontFamily in DEFAULT_LINE_HEIGHT) {
     return DEFAULT_LINE_HEIGHT[fontFamily];
   }
+
   return DEFAULT_LINE_HEIGHT[DEFAULT_FONT_FAMILY];
 };

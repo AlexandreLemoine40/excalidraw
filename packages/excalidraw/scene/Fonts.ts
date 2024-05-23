@@ -1,9 +1,6 @@
+import { FONT_FAMILY } from "../constants";
 import { isTextElement } from "../element";
 import { newElementWith } from "../element/mutateElement";
-import type {
-  ExcalidrawElement,
-  ExcalidrawTextElement,
-} from "../element/types";
 import { getFontString } from "../utils";
 import type Scene from "./Scene";
 import { ShapeCache } from "./ShapeCache";
@@ -60,27 +57,32 @@ export class Fonts {
     }
   };
 
-  public loadFontsForElements = async (
-    elements: readonly ExcalidrawElement[],
-  ) => {
+  /**
+   * Best UX comes from preloading all regular fonts on scene init (asynchronously) as it avoids:
+   * - rendering fallback font, new font download & swap (flick) on font selection
+   * - rendering wrong text bb on font selection due to fallback
+   * - avoids detecting and dynamically loading fonts on remote client changes
+   * - avoids hardcoding SVG for preview / icons in font list
+   *
+   * In the future, for bigger fonts (i.e. CJK), custom fonts or rich text (bold/italic), we might prefer to swap (fallback to regular first) and dynamically load the specific font based on the family & glyhps used.
+   **/
+  public loadRegularFonts = async () => {
     const fontFaces = await Promise.all(
-      [
-        ...new Set(
-          elements
-            .filter((element) => isTextElement(element))
-            .map((element) => (element as ExcalidrawTextElement).fontFamily),
-        ),
-      ].map((fontFamily) => {
-        const fontString = getFontString({
+      Object.values(FONT_FAMILY).map((fontFamily) => {
+        // load only regular FontFaces `normal` font-weight
+        const fontString = `normal ${getFontString({
           fontFamily,
           fontSize: 16,
-        });
+        })}`;
+
         if (!document.fonts?.check?.(fontString)) {
           return document.fonts?.load?.(fontString);
         }
+
         return undefined;
       }),
     );
+
     this.onFontsLoaded(fontFaces.flat().filter(Boolean) as FontFace[]);
   };
 }

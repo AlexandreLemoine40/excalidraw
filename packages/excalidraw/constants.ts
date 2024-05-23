@@ -109,15 +109,29 @@ export const CLASSES = {
   SHAPE_ACTIONS_MENU: "App-menu__left",
 };
 
-// FIXME_FONTS: should rather be a string, similar to https://drafts.csswg.org/css-fonts-4/#font-family-prop
-// 1-based in case we ever do `if(element.fontFamily)`
+/**
+ * // TODO: shouldn't be really `const`, likely neither have integers as values; let's think through possible classifications and consider:
+ * - encoding font-family in the scene (not necessarily the whole content), to dynamicly load custom fonts (especially when in multiplayer)
+ * - having fallbacks per family, first to other family names (i.e. Virgil to Virgil2 and vice versa), then to generic family names (i.e. Cascadia to monospace)
+ * - having only few decent options per generic family name
+ *
+ * resources:
+ * - https://developer.mozilla.org/en-US/docs/Web/CSS/generic-family
+ * - https://drafts.csswg.org/css-fonts-4/#font-family-prop
+ * - https://learn.microsoft.com/en-us/typography/opentype/spec/ibmfc
+ */
 export const FONT_FAMILY = {
   Virgil: 1,
   Helvetica: 2,
   Cascadia: 3,
   Assistant: 4,
   Virgil2: 5,
-  Roboto: 6,
+  Nunito: 6,
+  ComicShanns: 7,
+  Bangers: 8,
+  Pacifico: 9,
+  PermanentMarker: 10,
+  TeXGyreHeros: 11,
 };
 
 export const THEME = {

@@ -130,14 +130,14 @@
     <!-- * with JS (FontFace API) we have more options, but still there is a necessary parsing step, so we could use it for less critical fonts (i.e. dynamic / custom fonts) -->
     <link
       rel="preload"
-      href="/Virgil2.woff2"
+      href="/Virgil.woff2"
       as="font"
       vittype="font/woff2"
       crossorigin="anonymous"
     />
     <link
       rel="preload"
-      href="/Virgil.woff2"
+      href="/Virgil2.woff2"
       as="font"
       vittype="font/woff2"
       crossorigin="anonymous"
@@ -150,6 +150,10 @@
       vittype="font/woff2"
       crossorigin="anonymous"
     />
+
+    <!-- Warmup the connection for Google fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
     <link rel="stylesheet" href="/fonts.css" type="text/css" />
     <% if (typeof VITE_APP_DEV_DISABLE_LIVE_RELOAD != 'undefined' &&

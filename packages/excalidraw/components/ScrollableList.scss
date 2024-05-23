@@ -17,5 +17,11 @@
       text-align: center;
       line-height: 150%;
     }
+
+    &.FontPicker__list {
+      .dropdown-menu-item-base {
+        column-gap: unset;
+      }
+    }
   }
 }
