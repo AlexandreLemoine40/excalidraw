@@ -1,7 +1,6 @@
 .excalidraw {
   .ScrollableList__wrapper {
     position: static !important;
-    max-height: calc(366px - 4.625rem);
     border: none;
     font-size: 0.875rem;
     overflow-y: auto;
@@ -16,12 +15,6 @@
       overflow: hidden;
       text-align: center;
       line-height: 150%;
-    }
-
-    &.FontPicker__list {
-      .dropdown-menu-item-base {
-        column-gap: unset;
-      }
     }
   }
 }

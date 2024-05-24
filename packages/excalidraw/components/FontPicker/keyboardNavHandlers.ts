@@ -1,17 +1,14 @@
 import type { Node } from "../../utils";
 import { KEYS } from "../../keys";
-import {
-  type FontDescriptor,
-  getUnfocusedFont,
-  getFontByValue,
-} from "./FontPickerList";
+import { type FontDescriptor } from "./FontPickerList";
 
 interface FontPickerKeyNavHandlerProps {
   event: React.KeyboardEvent<HTMLDivElement>;
   inputRef: React.RefObject<HTMLInputElement>;
-  focusedFont: Node<FontDescriptor>;
-  filteredFonts: Node<FontDescriptor>[];
-  setFocusedFont: React.Dispatch<React.SetStateAction<Node<FontDescriptor>>>;
+  currentFont: Node<FontDescriptor> | undefined;
+  setCurrentFont: React.Dispatch<
+    React.SetStateAction<Node<FontDescriptor> | undefined>
+  >;
   onClose: () => void;
   onPick: (value: number) => void;
 }
@@ -19,9 +16,8 @@ interface FontPickerKeyNavHandlerProps {
 export const fontPickerKeyHandler = ({
   event,
   inputRef,
-  focusedFont,
-  filteredFonts,
-  setFocusedFont,
+  currentFont,
+  setCurrentFont,
   onClose,
   onPick,
 }: FontPickerKeyNavHandlerProps) => {
@@ -32,8 +28,6 @@ export const fontPickerKeyHandler = ({
   ) {
     // refocus input on the popup trigger shortcut
     inputRef.current?.focus();
-    // reset the focused font, similar to what browser does by default
-    setFocusedFont(getUnfocusedFont(filteredFonts));
     return true;
   }
 
@@ -43,23 +37,23 @@ export const fontPickerKeyHandler = ({
   }
 
   if (event.key === KEYS.ENTER) {
-    if (focusedFont?.value && getFontByValue(focusedFont.value)) {
-      onPick(focusedFont.value);
+    if (currentFont?.value) {
+      onPick(currentFont.value);
     }
 
     return true;
   }
 
   if (event.key === KEYS.ARROW_DOWN) {
-    if (focusedFont?.next) {
-      setFocusedFont(focusedFont.next);
+    if (currentFont?.next) {
+      setCurrentFont(currentFont.next);
     }
     return true;
   }
 
   if (event.key === KEYS.ARROW_UP) {
-    if (focusedFont?.prev) {
-      setFocusedFont(focusedFont.prev);
+    if (currentFont?.prev) {
+      setCurrentFont(currentFont.prev);
     }
     return true;
   }

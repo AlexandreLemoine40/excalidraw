@@ -883,6 +883,8 @@ const DEFAULT_LINE_HEIGHT = {
   // ~1.2 is the average for Cascadia in WebKit and Blink, and kinda Gecko too
   [FONT_FAMILY.Cascadia]: 1.2 as ExcalidrawTextElement["lineHeight"],
   [FONT_FAMILY.ComicShanns]: 1.2 as ExcalidrawTextElement["lineHeight"],
+  // Pacifico glyphs often reach over the font bb, bumping to a usable value
+  [FONT_FAMILY.Pacifico]: 1.75 as ExcalidrawTextElement["lineHeight"],
 };
 
 /** hhea.ascender */

@@ -27,7 +27,6 @@ import { fontPickerKeyHandler } from "./keyboardNavHandlers";
 
 export interface FontDescriptor {
   value: number;
-  icon?: JSX.Element;
   text?: string;
   badge?: {
     type: string;
@@ -35,10 +34,9 @@ export interface FontDescriptor {
   };
 }
 
-export const getAllFonts = () => [
+export const ALL_FONTS = [
   {
     value: FONT_FAMILY.Assistant,
-    icon: FontFamilyNormalIcon,
     text: "Assistant",
     badge: {
       type: DropDownMenuItemBadgeType.GREEN,
@@ -47,7 +45,6 @@ export const getAllFonts = () => [
   },
   {
     value: FONT_FAMILY.Bangers,
-    icon: FontFamilyNormalIcon,
     text: "Bangers",
     badge: {
       type: DropDownMenuItemBadgeType.GREEN,
@@ -56,12 +53,10 @@ export const getAllFonts = () => [
   },
   {
     value: FONT_FAMILY.Cascadia,
-    icon: FontFamilyCodeIcon,
     text: "Cascadia",
   },
   {
     value: FONT_FAMILY.ComicShanns,
-    icon: FontFamilyCodeIcon,
     text: "Comic Shanns",
     badge: {
       type: DropDownMenuItemBadgeType.GREEN,
@@ -70,12 +65,10 @@ export const getAllFonts = () => [
   },
   {
     value: FONT_FAMILY.Helvetica,
-    icon: FontFamilyNormalIcon,
     text: "Helvetica",
   },
   {
     value: FONT_FAMILY.Nunito,
-    icon: FontFamilyNormalIcon,
     text: "Nunito",
     badge: {
       type: DropDownMenuItemBadgeType.GREEN,
@@ -84,7 +77,6 @@ export const getAllFonts = () => [
   },
   {
     value: FONT_FAMILY.Pacifico,
-    icon: FontFamilyNormalIcon,
     text: "Pacifico",
     badge: {
       type: DropDownMenuItemBadgeType.GREEN,
@@ -93,8 +85,7 @@ export const getAllFonts = () => [
   },
   {
     value: FONT_FAMILY.PermanentMarker,
-    icon: FontFamilyNormalIcon,
-    text: "PermanentMarker",
+    text: "Permanent Marker",
     badge: {
       type: DropDownMenuItemBadgeType.GREEN,
       placeholder: t("fontList.badge.new"),
@@ -102,7 +93,6 @@ export const getAllFonts = () => [
   },
   {
     value: FONT_FAMILY.TeXGyreHeros,
-    icon: FontFamilyNormalIcon,
     text: "TeX Gyre Heros",
     badge: {
       type: DropDownMenuItemBadgeType.GREEN,
@@ -111,7 +101,6 @@ export const getAllFonts = () => [
   },
   {
     value: FONT_FAMILY.Virgil2,
-    icon: FreedrawIcon,
     text: "Virgil",
     badge: {
       type: DropDownMenuItemBadgeType.GREEN,
@@ -120,22 +109,9 @@ export const getAllFonts = () => [
   },
   {
     value: FONT_FAMILY.Virgil,
-    icon: FreedrawIcon,
     text: "Virgil Classic",
   },
 ];
-
-// FIXME_FONTS: dumb for now, might work just on filter fonts & on top of map
-export const getFontByValue = (fontFamilyValue: number) => {
-  return getAllFonts().find((font) => font.value === fontFamilyValue);
-};
-
-export const getUnfocusedFont = (filteredFonts: FontDescriptor[]) =>
-  ({
-    value: -1,
-    prev: filteredFonts[filteredFonts.length - 1],
-    next: filteredFonts[0],
-  } as Node<FontDescriptor>);
 
 interface FontPickerListProps {
   selectedFontFamily: FontFamilyValues;
@@ -149,24 +125,27 @@ export const FontPickerList = React.memo(
     const [searchTerm, setSearchTerm] = useState("");
     const inputRef = useRef<HTMLInputElement>(null);
 
-    // FIXME_FONTS: could be more optimized
     const filteredFonts = useMemo(
       () =>
         arrayToList(
-          getAllFonts().filter((font) =>
+          ALL_FONTS.filter((font) =>
             font.text?.toLowerCase().includes(searchTerm),
           ),
         ),
       [searchTerm],
     );
 
-    const [focusedFont, setFocusedFont] = useState(
-      getUnfocusedFont(filteredFonts),
+    const getFontByValue = useMemo(
+      () => filteredFonts.find((font) => font.value === selectedFontFamily),
+      [filteredFonts, selectedFontFamily],
     );
 
+    const [currentFont, setCurrentFont] = useState<
+      Node<FontDescriptor> | undefined
+    >(getFontByValue);
     useEffect(
-      () => setFocusedFont(getUnfocusedFont(filteredFonts)),
-      [filteredFonts],
+      () => setCurrentFont(getFontByValue ?? filteredFonts[0]),
+      [filteredFonts, getFontByValue],
     );
 
     const handleKeyDown = useCallback<KeyboardEventHandler<HTMLDivElement>>(
@@ -174,9 +153,8 @@ export const FontPickerList = React.memo(
         const handled = fontPickerKeyHandler({
           event,
           inputRef,
-          focusedFont,
-          filteredFonts,
-          setFocusedFont,
+          currentFont,
+          setCurrentFont,
           onClose,
           onPick,
         });
@@ -186,7 +164,7 @@ export const FontPickerList = React.memo(
           event.stopPropagation();
         }
       },
-      [focusedFont, filteredFonts, onClose, onPick],
+      [currentFont, onClose, onPick],
     );
 
     return (
@@ -206,21 +184,26 @@ export const FontPickerList = React.memo(
           className="FontPicker__list dropdown-menu"
           placeholder={t("fontList.empty")}
         >
-          {filteredFonts.map((font, index) => (
+          {filteredFonts.map((font) => (
             <DropdownMenuItem
-              key={index}
+              key={font.value}
               value={font.value}
               style={{
                 fontFamily: getFontFamilyString({ fontFamily: font.value }),
               }}
+              hovered={font.value === currentFont?.value}
               selected={font.value === selectedFontFamily}
-              focus={font.value === focusedFont?.value}
-              onClick={(e) => onPick(Number(e.currentTarget.value))}
-              // onFocus is interrupted by something & we read the currentTarget anyway, so we could detect already in a capture phase
-              onFocusCapture={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                setFocusedFont(font);
+              // allow to tab between search and selected font
+              tabIndex={font.value === selectedFontFamily ? 0 : -1}
+              onClick={(e) => {
+                onPick(Number(e.currentTarget.value));
+                // bring focus back to the input
+                inputRef.current?.focus();
+              }}
+              onMouseMove={() => {
+                if (currentFont?.value !== font.value) {
+                  setCurrentFont(font);
+                }
               }}
             >
               {font.text}

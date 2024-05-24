@@ -13,8 +13,8 @@ const DropdownMenuItem = ({
   children,
   shortcut,
   className,
+  hovered,
   selected,
-  focus,
   onSelect,
   onClick,
   ...rest
@@ -24,18 +24,18 @@ const DropdownMenuItem = ({
   onSelect?: (event: Event) => void;
   children: React.ReactNode;
   shortcut?: string;
+  hovered?: boolean;
   selected?: boolean;
-  focus?: boolean;
   className?: string;
 } & Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "onSelect">) => {
   const handleClick = useHandleDropdownMenuItemClick(onClick, onSelect);
   const ref = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
-    if (focus) {
-      ref.current?.focus();
+    if (hovered) {
+      ref.current?.scrollIntoView({ block: "nearest", behavior: "smooth" });
     }
-  }, [focus]);
+  }, [hovered]);
 
   return (
     <button
@@ -43,7 +43,7 @@ const DropdownMenuItem = ({
       ref={ref}
       value={value}
       onClick={handleClick}
-      className={getDropdownMenuItemClassName(className, selected)}
+      className={getDropdownMenuItemClassName(className, selected, hovered)}
       title={rest.title ?? rest["aria-label"]}
     >
       <MenuItemContent icon={icon} shortcut={shortcut}>

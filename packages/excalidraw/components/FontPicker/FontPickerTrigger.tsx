@@ -1,11 +1,11 @@
 import * as Popover from "@radix-ui/react-popover";
-import { useState, useMemo, useEffect } from "react";
+import { useMemo } from "react";
 import { ButtonIcon } from "../ButtonIcon";
 import { FontFamilyNormalIcon } from "../icons";
 import type { FontFamilyValues } from "../../element/types";
 import { t } from "../../i18n";
 import { isCustomFont } from "./FontPicker";
-import { getFontByValue } from "./FontPickerList";
+// import { getFontByValue } from "./FontPickerList";
 
 interface FontPickerTriggerProps {
   selectedFontFamily: FontFamilyValues;
@@ -14,20 +14,10 @@ interface FontPickerTriggerProps {
 export const FontPickerTrigger = ({
   selectedFontFamily,
 }: FontPickerTriggerProps) => {
-  const [selectedFont, setSelectedFont] = useState(
-    getFontByValue(selectedFontFamily),
-  );
-
   const isTriggerActive = useMemo(
     () => isCustomFont(selectedFontFamily),
     [selectedFontFamily],
   );
-
-  useEffect(() => {
-    if (selectedFont?.value !== selectedFontFamily) {
-      setSelectedFont(getFontByValue(selectedFontFamily));
-    }
-  }, [selectedFont?.value, selectedFontFamily]);
 
   return (
     <Popover.Trigger asChild>
@@ -35,7 +25,7 @@ export const FontPickerTrigger = ({
       <div>
         <ButtonIcon
           standalone
-          icon={selectedFont?.icon || FontFamilyNormalIcon}
+          icon={FontFamilyNormalIcon}
           title={t("labels.showFonts")}
           className="properties-trigger"
           testId={"font-family-show-fonts"}

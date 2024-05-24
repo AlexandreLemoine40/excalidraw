@@ -3,7 +3,7 @@
 
   .QuickSearch__wrapper {
     position: relative;
-    height: 2.5rem;
+    height: 2.6rem; // added +0.1 due to Safari
     border-bottom: 1px solid var(--list-border-color);
 
     svg {
