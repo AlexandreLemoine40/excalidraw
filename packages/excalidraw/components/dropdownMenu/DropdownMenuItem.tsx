@@ -33,7 +33,7 @@ const DropdownMenuItem = ({
 
   useEffect(() => {
     if (hovered) {
-      ref.current?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+      ref.current?.scrollIntoView({ block: "nearest" });
     }
   }, [hovered]);
 

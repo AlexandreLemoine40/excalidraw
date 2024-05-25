@@ -17,11 +17,6 @@ import DropdownMenuItem, {
 } from "../dropdownMenu/DropdownMenuItem";
 import { type FontFamilyValues } from "../../element/types";
 import { type Node, arrayToList, getFontFamilyString } from "../../utils";
-import {
-  FreedrawIcon,
-  FontFamilyNormalIcon,
-  FontFamilyCodeIcon,
-} from "../icons";
 import { t } from "../../i18n";
 import { fontPickerKeyHandler } from "./keyboardNavHandlers";
 
@@ -181,7 +176,7 @@ export const FontPickerList = React.memo(
           onChange={setSearchTerm}
         />
         <ScrollableList
-          className="FontPicker__list dropdown-menu"
+          className="dropdown-menu max-items-8 manual-hover"
           placeholder={t("fontList.empty")}
         >
           {filteredFonts.map((font) => (

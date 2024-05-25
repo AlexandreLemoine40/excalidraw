@@ -44,10 +44,27 @@
       font-family: inherit;
     }
 
-    &.FontPicker__list {
+    &.max-items-8 {
       // display max 8 items per list, where each has 2rem height, 0.25rem top margin and 1px bottom margin
       // to limit unespected `scrollIntoView` on top / bottom edge
-      max-height: calc(8*2rem + 8*0.25rem + 8px);
+      max-height: calc(8 * (2rem + 0.25rem + 1px));
+    }
+
+    &.manual-hover {
+      // disable built-in hover due to keyboard navigation
+      .dropdown-menu-item {
+        &:hover {
+          background-color: transparent;
+        }
+
+        &--hovered {
+          background-color: var(--button-hover-bg) !important;
+        }
+
+        &--selected {
+          background-color: var(--color-primary-light) !important;
+        }
+      }
     }
 
     .dropdown-menu-item {
@@ -63,11 +80,6 @@
 
       @media screen and (min-width: 1921px) {
         height: 2.25rem;
-      }
-
-      &--selected {
-        background: var(--color-primary-light);
-        --icon-fill-color: var(--color-primary-darker);
       }
 
       &__text {
@@ -91,7 +103,12 @@
         }
       }
 
-      &--hovered, &:hover {
+      &--selected {
+        background: var(--color-primary-light);
+        --icon-fill-color: var(--color-primary-darker);
+      }
+
+      &:hover {
         background-color: var(--button-hover-bg);
         text-decoration: none;
       }
