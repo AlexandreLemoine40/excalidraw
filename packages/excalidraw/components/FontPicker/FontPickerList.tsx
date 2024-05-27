@@ -130,17 +130,18 @@ export const FontPickerList = React.memo(
       [searchTerm],
     );
 
-    const getFontByValue = useMemo(
+    const getSelectedFont = useMemo(
       () => filteredFonts.find((font) => font.value === selectedFontFamily),
       [filteredFonts, selectedFontFamily],
     );
 
     const [currentFont, setCurrentFont] = useState<
       Node<FontDescriptor> | undefined
-    >(getFontByValue);
+    >(getSelectedFont);
+
     useEffect(
-      () => setCurrentFont(getFontByValue ?? filteredFonts[0]),
-      [filteredFonts, getFontByValue],
+      () => setCurrentFont(getSelectedFont ?? filteredFonts[0]),
+      [filteredFonts, getSelectedFont],
     );
 
     const handleKeyDown = useCallback<KeyboardEventHandler<HTMLDivElement>>(
