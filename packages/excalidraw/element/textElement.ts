@@ -861,116 +861,93 @@ export const isMeasureTextSupported = () => {
   return width > 0;
 };
 
-/**
- * Unitless line height
- *
- * In previous versions we used `normal` line height, which browsers interpret
- * differently, and based on font-family and font-size.
- *
- * To make line heights consistent across browsers we hardcode the values for
- * each of our fonts based on most common average line-heights.
- * See https://github.com/excalidraw/excalidraw/pull/6360#issuecomment-1477635971
- * where the values come from.
- */
-const DEFAULT_LINE_HEIGHT = {
-  // ~1.25 is the average for Virgil in WebKit and Blink.
-  // Gecko (FF) uses ~1.28.
-  [FONT_FAMILY.Virgil]: 1.25 as ExcalidrawTextElement["lineHeight"],
-  [FONT_FAMILY.Virgil2]: 1.25 as ExcalidrawTextElement["lineHeight"],
-  // ~1.15 is the average for Helvetica in WebKit and Blink.
-  [FONT_FAMILY.Helvetica]: 1.15 as ExcalidrawTextElement["lineHeight"],
-  [FONT_FAMILY.TeXGyreHeros]: 1.15 as ExcalidrawTextElement["lineHeight"],
-  // ~1.2 is the average for Cascadia in WebKit and Blink, and kinda Gecko too
-  [FONT_FAMILY.Cascadia]: 1.2 as ExcalidrawTextElement["lineHeight"],
-  [FONT_FAMILY.ComicShanns]: 1.2 as ExcalidrawTextElement["lineHeight"],
-  // Pacifico glyphs often reach over the font bb, bumping to a usable value
-  [FONT_FAMILY.Pacifico]: 1.75 as ExcalidrawTextElement["lineHeight"],
-};
+/** For head & hhea metrics read the woff2 with https://fontdrop.info/  */
+interface FontMetrics {
+  /** head.unitsPerEm */
+  unitsPerEm: 1000 | 1024 | 2048;
+  /** hhea.ascender */
+  ascender: number;
+  /** hhea.descender */
+  descender: number;
+  /** harcoded unitless line-height, https://github.com/excalidraw/excalidraw/pull/6360#issuecomment-1477635971 */
+  lineHeight: number;
+}
 
-/** hhea.ascender */
-type ascender = number & MakeBrand<"ascender">;
-
-/** hhea.descender */
-type descender = number & MakeBrand<"descender">;
-
-/** head.unitsPerEm */
-type unitsPerEm = 1000 | 1024 | 2048;
-
-/**
- * Hardcoded metrics for default fonts, read by https://opentype.js.org/font-inspector.html.
- * For custom fonts, read these metrics from head & hhea tables and extend this object.
- *
- * WARN: opentype does NOT open WOFF2 correctly, make sure to convert WOFF2 to TTF first.
- */
-export const FONT_METRICS: Record<
-  number,
-  {
-    unitsPerEm: unitsPerEm;
-    ascender: ascender;
-    descender: descender;
-  }
-> = {
+export const FONT_METRICS: Record<number, FontMetrics> = {
   [FONT_FAMILY.Virgil]: {
     unitsPerEm: 1000,
-    ascender: 886 as ascender,
-    descender: -374 as descender,
+    ascender: 886,
+    descender: -374,
+    lineHeight: 1.25,
   },
-  [FONT_FAMILY.Virgil2]: {
+  [FONT_FAMILY.Excalifont]: {
     unitsPerEm: 1000,
-    ascender: 886 as ascender,
-    descender: -374 as descender,
+    ascender: 886,
+    descender: -374,
+    lineHeight: 1.25,
   },
   [FONT_FAMILY.Helvetica]: {
     unitsPerEm: 2048,
-    ascender: 1577 as ascender,
-    descender: -471 as descender,
-  },
-  [FONT_FAMILY.Cascadia]: {
-    unitsPerEm: 2048,
-    ascender: 1977 as ascender,
-    descender: -480 as descender,
-  },
-  [FONT_FAMILY.Assistant]: {
-    unitsPerEm: 1000,
-    ascender: 1021 as ascender,
-    descender: -287 as descender,
-  },
-  [FONT_FAMILY.Nunito]: {
-    unitsPerEm: 1000,
-    ascender: 1011 as ascender,
-    descender: -353 as descender,
-  },
-  [FONT_FAMILY.ComicShanns]: {
-    unitsPerEm: 1000,
-    ascender: 750 as ascender,
-    descender: -250 as descender,
+    ascender: 1577,
+    descender: -471,
+    lineHeight: 1.15,
   },
   [FONT_FAMILY.TeXGyreHeros]: {
     unitsPerEm: 1000,
-    ascender: 1148 as ascender,
-    descender: -284 as descender,
+    ascender: 1148,
+    descender: -284,
+    lineHeight: 1.15,
+  },
+  [FONT_FAMILY.Cascadia]: {
+    unitsPerEm: 2048,
+    ascender: 1977,
+    descender: -480,
+    lineHeight: 1.2,
+  },
+  [FONT_FAMILY.ComicShanns]: {
+    unitsPerEm: 1000,
+    ascender: 750,
+    descender: -250,
+    lineHeight: 1.2,
+  },
+  [FONT_FAMILY.Assistant]: {
+    unitsPerEm: 1000,
+    ascender: 1021,
+    descender: -287,
+    lineHeight: 1.25,
+  },
+  [FONT_FAMILY.Nunito]: {
+    unitsPerEm: 1000,
+    ascender: 1011,
+    descender: -353,
+    lineHeight: 1.25,
   },
   [FONT_FAMILY.Bangers]: {
     unitsPerEm: 1000,
-    ascender: 883 as ascender,
-    descender: -181 as descender,
-  },
-  [FONT_FAMILY.Pacifico]: {
-    unitsPerEm: 1000,
-    ascender: 1303 as ascender,
-    descender: -453 as descender,
+    ascender: 883,
+    descender: -181,
+    lineHeight: 1.25,
   },
   [FONT_FAMILY.PermanentMarker]: {
     unitsPerEm: 1024,
-    ascender: 1136 as ascender,
-    descender: -325 as descender,
+    ascender: 1136,
+    descender: -325,
+    lineHeight: 1.25,
+  },
+  [FONT_FAMILY.Pacifico]: {
+    unitsPerEm: 1000,
+    ascender: 1303,
+    descender: -453,
+    lineHeight: 1.75,
   },
 };
 
 export const getDefaultLineHeight = (fontFamily: FontFamilyValues) => {
-  if (fontFamily in DEFAULT_LINE_HEIGHT) {
-    return DEFAULT_LINE_HEIGHT[fontFamily];
+  if (fontFamily in FONT_METRICS) {
+    return FONT_METRICS[fontFamily]
+      .lineHeight as ExcalidrawTextElement["lineHeight"];
   }
 
-  return DEFAULT_LINE_HEIGHT[DEFAULT_FONT_FAMILY];
+  return FONT_METRICS[DEFAULT_FONT_FAMILY]
+    .lineHeight as ExcalidrawTextElement["lineHeight"];
 };

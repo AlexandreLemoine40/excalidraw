@@ -59,6 +59,14 @@ export const ALL_FONTS = [
     },
   },
   {
+    value: FONT_FAMILY.Excalifont,
+    text: "Excalifont",
+    badge: {
+      type: DropDownMenuItemBadgeType.GREEN,
+      placeholder: t("fontList.badge.new"),
+    },
+  },
+  {
     value: FONT_FAMILY.Helvetica,
     text: "Helvetica",
   },
@@ -95,16 +103,8 @@ export const ALL_FONTS = [
     },
   },
   {
-    value: FONT_FAMILY.Virgil2,
-    text: "Virgil",
-    badge: {
-      type: DropDownMenuItemBadgeType.GREEN,
-      placeholder: t("fontList.badge.new"),
-    },
-  },
-  {
     value: FONT_FAMILY.Virgil,
-    text: "Virgil Classic",
+    text: "Virgil",
   },
 ];
 

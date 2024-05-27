@@ -112,7 +112,7 @@ export const CLASSES = {
 /**
  * // TODO: shouldn't be really `const`, likely neither have integers as values; let's think through possible classifications and consider:
  * - encoding font-family in the scene (not necessarily the whole content), to dynamicly load custom fonts (especially when in multiplayer)
- * - having fallbacks per family, first to other family names (i.e. Virgil to Virgil2 and vice versa), then to generic family names (i.e. Cascadia to monospace)
+ * - having fallbacks per family, first to other family names (i.e. Virgil to Excalifont and vice versa), then to generic family names (i.e. Cascadia to monospace)
  * - having only few decent options per generic family name
  *
  * resources:
@@ -125,7 +125,7 @@ export const FONT_FAMILY = {
   Helvetica: 2,
   Cascadia: 3,
   Assistant: 4,
-  Virgil2: 5,
+  Excalifont: 5,
   Nunito: 6,
   ComicShanns: 7,
   Bangers: 8,
@@ -159,7 +159,7 @@ export const WINDOWS_EMOJI_FALLBACK_FONT = "Segoe UI Emoji";
 
 export const MIN_FONT_SIZE = 1;
 export const DEFAULT_FONT_SIZE = 20;
-export const DEFAULT_FONT_FAMILY: FontFamilyValues = FONT_FAMILY.Virgil2;
+export const DEFAULT_FONT_FAMILY: FontFamilyValues = FONT_FAMILY.Excalifont;
 export const DEFAULT_TEXT_ALIGN = "left";
 export const DEFAULT_VERTICAL_ALIGN = "top";
 export const DEFAULT_VERSION = "{version}";

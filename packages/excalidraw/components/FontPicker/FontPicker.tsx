@@ -18,7 +18,7 @@ import "./FontPicker.scss";
 
 export const DEFAULT_FONTS = [
   {
-    value: FONT_FAMILY.Virgil2,
+    value: FONT_FAMILY.Excalifont,
     icon: FreedrawIcon,
     text: t("labels.handDrawn"),
     testId: "font-family-virgil-new",

@@ -533,8 +533,8 @@ class App extends React.Component<AppProps, AppState> {
   private excalidrawContainerRef = React.createRef<HTMLDivElement>();
 
   public scene: Scene;
+  public fonts: Fonts;
   public renderer: Renderer;
-  private fonts: Fonts;
   private resizeObserver: ResizeObserver | undefined;
   private nearestScrollableContainer: HTMLElement | Document | undefined;
   public library: AppClassProperties["library"];
@@ -2261,7 +2261,7 @@ class App extends React.Component<AppProps, AppState> {
     // fire (looking at you Safari), so on init we manually load all
     // fonts and rerender scene text elements once done. This also
     // seems faster even in browsers that do fire the loadingdone event.
-    this.fonts.loadRegularFonts();
+    this.fonts.load();
 
     if ("launchQueue" in window && "LaunchParams" in window) {
       (window as any).launchQueue.setConsumer(
@@ -2434,6 +2434,10 @@ class App extends React.Component<AppProps, AppState> {
           configurable: true,
           value: this.store,
         },
+        fonts: {
+          configurable: true,
+          value: this.fonts,
+        },
       });
     }
 
@@ -2570,7 +2574,7 @@ class App extends React.Component<AppProps, AppState> {
       // rerender text elements on font load to fix #637 && #1553
       addEventListener(document.fonts, "loadingdone", (event) => {
         const loadedFontFaces = (event as FontFaceSetLoadEvent).fontfaces;
-        this.fonts.onFontsLoaded(loadedFontFaces);
+        this.fonts.onLoaded(loadedFontFaces);
       }),
       // Safari-only desktop pinch zoom
       addEventListener(

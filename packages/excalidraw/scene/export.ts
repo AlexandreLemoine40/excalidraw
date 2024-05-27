@@ -32,12 +32,17 @@ import {
   getRootElements,
 } from "../frame";
 import { newTextElement } from "../element";
-import type { Mutable } from "../utility-types";
+import { type Mutable } from "../utility-types";
 import { newElementWith } from "../element/mutateElement";
-import { isFrameElement, isFrameLikeElement } from "../element/typeChecks";
+import {
+  isFrameElement,
+  isFrameLikeElement,
+  isTextElement,
+} from "../element/typeChecks";
 import type { RenderableElementsMap } from "./types";
 import { syncInvalidIndices } from "../fractionalIndex";
 import { renderStaticScene } from "../renderer/staticScene";
+import { Fonts } from "./Fonts";
 
 const SVG_EXPORT_TAG = `<!-- svg-source:excalidraw -->`;
 
@@ -371,23 +376,43 @@ export const exportToSvg = async (
         </clipPath>`;
   }
 
+  const fontFamilies = elements.reduce((acc, curr) => {
+    if (isTextElement(curr)) {
+      acc.add(curr.fontFamily);
+    }
+
+    return acc;
+  }, new Set<number>());
+
+  const fontFaces = await Promise.all(
+    Array.from(fontFamilies).map(async (x) => {
+      const fontFaces = Fonts.registered.get(x);
+
+      if (!fontFaces) {
+        console.error(
+          `Couldn't get registered font family for "${x}"`,
+          Fonts.registered,
+        );
+        return;
+      }
+
+      return Promise.all(
+        fontFaces.map(
+          async (face) => `@font-face {
+          font-family: ${face.family};
+          src: url(data:font/woff2;base64,${await face.getContent()});
+        }`,
+        ),
+      );
+    }),
+  );
+
   svgRoot.innerHTML = `
   ${SVG_EXPORT_TAG}
   ${metadata}
   <defs>
     <style class="style-fonts">
-      @font-face {
-        font-family: "Virgil";
-        src: url("${assetPath}Virgil.woff2");
-      }
-      @font-face {
-        font-family: "Cascadia";
-        src: url("${assetPath}Cascadia.woff2");
-      }
-      @font-face {
-        font-family: "Assistant";
-        src: url("${assetPath}Assistant-Regular.woff2");
-      }
+      ${fontFaces.flat().filter(Boolean).join("\n")};
     </style>
     ${exportingFrameClipPath}
   </defs>

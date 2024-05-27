@@ -35,14 +35,6 @@ export default defineConfig({
             // Taking the substring after "locales/"
             return `locales/${id.substring(index + 8)}`;
           }
-        },
-        assetFileNames: (assetsInfo) => {
-          if (assetsInfo.name?.match(/.+.(ttf|woff2|otf)/)) {
-            // keep fonts in the root due to backwards compatibility (i.e. embedded inside SVGs)
-            return "[name][extname]";
-          }
-
-          return "assets/[name]-[hash][extname]"
         }
       },
     },
@@ -72,7 +64,7 @@ export default defineConfig({
 
       workbox: {
         // Don't push fonts and locales to app precache
-        globIgnores: ["fonts.css", "**/locales/**", "service-worker.js"],
+        globIgnores: ["**/locales/**", "service-worker.js"],
         runtimeCaching: [
           {
             urlPattern: new RegExp("/.+.(ttf|woff2|otf)"),
@@ -82,16 +74,6 @@ export default defineConfig({
               expiration: {
                 maxEntries: 50,
                 maxAgeSeconds: 60 * 60 * 24 * 90, // <== 90 days
-              },
-            },
-          },
-          {
-            urlPattern: new RegExp("fonts.css"),
-            handler: "StaleWhileRevalidate",
-            options: {
-              cacheName: "fonts",
-              expiration: {
-                maxEntries: 50,
               },
             },
           },
