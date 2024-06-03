@@ -15,9 +15,9 @@ import {
   ARROW_LABEL_FONT_SIZE_TO_MIN_WIDTH_RATIO,
   ARROW_LABEL_WIDTH_FRACTION,
   BOUND_TEXT_PADDING,
+  FONT_FAMILY,
   DEFAULT_FONT_FAMILY,
   DEFAULT_FONT_SIZE,
-  FONT_FAMILY,
   TEXT_ALIGN,
   VERTICAL_ALIGN,
 } from "../constants";
@@ -30,7 +30,8 @@ import {
   resetOriginalContainerCache,
   updateOriginalContainerCache,
 } from "./containerCache";
-import type { ExtractSetType, MakeBrand } from "../utility-types";
+import type { ExtractSetType } from "../utility-types";
+import { FONT_METRICS, Fonts } from "../fonts";
 
 export const normalizeText = (text: string) => {
   return (
@@ -324,7 +325,8 @@ export const getVerticalOffset = (
   lineHeightPx: number,
 ) => {
   const { unitsPerEm, ascender, descender } =
-    FONT_METRICS[fontFamily] || FONT_METRICS[FONT_FAMILY.Helvetica];
+    Fonts.registered.get(fontFamily)?.metrics ||
+    FONT_METRICS[FONT_FAMILY.TeXGyreHeros];
 
   const fontSizeEm = fontSize / unitsPerEm;
   const lineGap =
@@ -861,93 +863,14 @@ export const isMeasureTextSupported = () => {
   return width > 0;
 };
 
-/** For head & hhea metrics read the woff2 with https://fontdrop.info/  */
-interface FontMetrics {
-  /** head.unitsPerEm */
-  unitsPerEm: 1000 | 1024 | 2048;
-  /** hhea.ascender */
-  ascender: number;
-  /** hhea.descender */
-  descender: number;
-  /** harcoded unitless line-height, https://github.com/excalidraw/excalidraw/pull/6360#issuecomment-1477635971 */
-  lineHeight: number;
-}
-
-export const FONT_METRICS: Record<number, FontMetrics> = {
-  [FONT_FAMILY.Virgil]: {
-    unitsPerEm: 1000,
-    ascender: 886,
-    descender: -374,
-    lineHeight: 1.25,
-  },
-  [FONT_FAMILY.Excalifont]: {
-    unitsPerEm: 1000,
-    ascender: 886,
-    descender: -374,
-    lineHeight: 1.25,
-  },
-  [FONT_FAMILY.Helvetica]: {
-    unitsPerEm: 2048,
-    ascender: 1577,
-    descender: -471,
-    lineHeight: 1.15,
-  },
-  [FONT_FAMILY.TeXGyreHeros]: {
-    unitsPerEm: 1000,
-    ascender: 1148,
-    descender: -284,
-    lineHeight: 1.15,
-  },
-  [FONT_FAMILY.Cascadia]: {
-    unitsPerEm: 2048,
-    ascender: 1977,
-    descender: -480,
-    lineHeight: 1.2,
-  },
-  [FONT_FAMILY.ComicShanns]: {
-    unitsPerEm: 1000,
-    ascender: 750,
-    descender: -250,
-    lineHeight: 1.2,
-  },
-  [FONT_FAMILY.Assistant]: {
-    unitsPerEm: 1000,
-    ascender: 1021,
-    descender: -287,
-    lineHeight: 1.25,
-  },
-  [FONT_FAMILY.Nunito]: {
-    unitsPerEm: 1000,
-    ascender: 1011,
-    descender: -353,
-    lineHeight: 1.25,
-  },
-  [FONT_FAMILY.Bangers]: {
-    unitsPerEm: 1000,
-    ascender: 883,
-    descender: -181,
-    lineHeight: 1.25,
-  },
-  [FONT_FAMILY.PermanentMarker]: {
-    unitsPerEm: 1024,
-    ascender: 1136,
-    descender: -325,
-    lineHeight: 1.25,
-  },
-  [FONT_FAMILY.Pacifico]: {
-    unitsPerEm: 1000,
-    ascender: 1303,
-    descender: -453,
-    lineHeight: 1.75,
-  },
-};
-
 export const getDefaultLineHeight = (fontFamily: FontFamilyValues) => {
-  if (fontFamily in FONT_METRICS) {
-    return FONT_METRICS[fontFamily]
-      .lineHeight as ExcalidrawTextElement["lineHeight"];
+  let lineHeight = FONT_METRICS[FONT_FAMILY.Virgil].lineHeight;
+
+  const family = Fonts.registered.get(fontFamily);
+
+  if (family?.metrics?.lineHeight) {
+    lineHeight = family.metrics.lineHeight;
   }
 
-  return FONT_METRICS[DEFAULT_FONT_FAMILY]
-    .lineHeight as ExcalidrawTextElement["lineHeight"];
+  return lineHeight as ExcalidrawTextElement["lineHeight"];
 };

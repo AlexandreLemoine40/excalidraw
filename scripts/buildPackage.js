@@ -99,11 +99,11 @@ const rawConfig = {
   entryPoints: ["index.tsx"],
   bundle: true,
   format: "esm",
-  plugins: [sassPlugin()],
-
+  plugins: [
+    sassPlugin()
+  ],
   loader: {
     ".woff2": "copy",
-    ".ttf": "copy",
     ".json": "copy",
   },
   packages: "external",

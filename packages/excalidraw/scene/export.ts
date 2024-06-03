@@ -13,8 +13,8 @@ import { arrayToMap, distance, getFontString, toBrandedType } from "../utils";
 import type { AppState, BinaryFiles } from "../types";
 import {
   DEFAULT_EXPORT_PADDING,
-  FONT_FAMILY,
   FRAME_STYLE,
+  FONT_FAMILY,
   SVG_NS,
   THEME,
   THEME_FILTER,
@@ -42,7 +42,7 @@ import {
 import type { RenderableElementsMap } from "./types";
 import { syncInvalidIndices } from "../fractionalIndex";
 import { renderStaticScene } from "../renderer/staticScene";
-import { Fonts } from "./Fonts";
+import { Fonts } from "../fonts";
 
 const SVG_EXPORT_TAG = `<!-- svg-source:excalidraw -->`;
 
@@ -338,21 +338,6 @@ export const exportToSvg = async (
     svgRoot.setAttribute("filter", THEME_FILTER);
   }
 
-  let assetPath = "https://excalidraw.com/";
-  // Asset path needs to be determined only when using package
-  if (import.meta.env.VITE_IS_EXCALIDRAW_NPM_PACKAGE) {
-    assetPath =
-      window.EXCALIDRAW_ASSET_PATH ||
-      `https://unpkg.com/${import.meta.env.VITE_PKG_NAME}@${
-        import.meta.env.PKG_VERSION
-      }`;
-
-    if (assetPath?.startsWith("/")) {
-      assetPath = assetPath.replace("/", `${window.location.origin}/`);
-    }
-    assetPath = `${assetPath}/dist/excalidraw-assets/`;
-  }
-
   const offsetX = -minX + exportPadding;
   const offsetY = -minY + exportPadding;
 
@@ -376,21 +361,24 @@ export const exportToSvg = async (
         </clipPath>`;
   }
 
-  const fontFamilies = elements.reduce((acc, curr) => {
-    if (isTextElement(curr)) {
-      acc.add(curr.fontFamily);
+  const fontFamilies = elements.reduce((acc, element) => {
+    if (isTextElement(element)) {
+      acc.add(element.fontFamily);
     }
 
     return acc;
   }, new Set<number>());
 
+  // only executed if nothing was registered yet
+  Fonts.registerAll();
+
   const fontFaces = await Promise.all(
     Array.from(fontFamilies).map(async (x) => {
-      const fontFaces = Fonts.registered.get(x);
+      const { fontFaces } = Fonts.registered.get(x) ?? {};
 
-      if (!fontFaces) {
+      if (!Array.isArray(fontFaces)) {
         console.error(
-          `Couldn't get registered font family for "${x}"`,
+          `Couldn't find registered font-faces for font-family "${x}"`,
           Fonts.registered,
         );
         return;
@@ -400,7 +388,7 @@ export const exportToSvg = async (
         fontFaces.map(
           async (face) => `@font-face {
           font-family: ${face.family};
-          src: url(data:font/woff2;base64,${await face.getContent()});
+          src: url(${await face.getContent()});
         }`,
         ),
       );
@@ -412,7 +400,7 @@ export const exportToSvg = async (
   ${metadata}
   <defs>
     <style class="style-fonts">
-      ${fontFaces.flat().filter(Boolean).join("\n")};
+      ${fontFaces.flat().filter(Boolean).join("\n")}
     </style>
     ${exportingFrameClipPath}
   </defs>
