@@ -369,9 +369,6 @@ export const exportToSvg = async (
     return acc;
   }, new Set<number>());
 
-  // only executed if nothing was registered yet
-  Fonts.registerAll();
-
   const fontFaces = await Promise.all(
     Array.from(fontFamilies).map(async (x) => {
       const { fontFaces } = Fonts.registered.get(x) ?? {};

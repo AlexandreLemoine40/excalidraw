@@ -864,7 +864,7 @@ export const isMeasureTextSupported = () => {
 };
 
 export const getDefaultLineHeight = (fontFamily: FontFamilyValues) => {
-  let lineHeight = FONT_METRICS[FONT_FAMILY.Virgil].lineHeight;
+  let { lineHeight } = FONT_METRICS[FONT_FAMILY.Virgil];
 
   const family = Fonts.registered.get(fontFamily);
 

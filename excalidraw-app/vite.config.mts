@@ -75,7 +75,7 @@ export default defineConfig({
         globIgnores: ["**/locales/**", "service-worker.js"],
         runtimeCaching: [
           {
-            urlPattern: new RegExp(".+\.woff2"),
+            urlPattern: /.+\.woff2/,
             handler: "CacheFirst",
             options: {
               cacheName: "fonts",
@@ -86,7 +86,7 @@ export default defineConfig({
             },
           },
           {
-            urlPattern: new RegExp("locales/[^/]+\.js"),
+            urlPattern: new RegExp("locales/[^/]+.js"),
             handler: "CacheFirst",
             options: {
               cacheName: "locales",

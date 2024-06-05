@@ -21,7 +21,7 @@ export const DEFAULT_FONTS = [
     value: FONT_FAMILY.Excalifont,
     icon: FreedrawIcon,
     text: t("labels.handDrawn"),
-    testId: "font-family-virgil-new",
+    testId: "font-family-handrawn",
   },
   {
     value: FONT_FAMILY.Helvetica,

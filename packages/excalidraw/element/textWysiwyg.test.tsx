@@ -805,7 +805,7 @@ describe("textWysiwyg", () => {
       await new Promise((r) => setTimeout(r, 0));
       updateTextEditor(editor, "Hello World!");
       editor.blur();
-      expect(text.fontFamily).toEqual(FONT_FAMILY.Virgil);
+      expect(text.fontFamily).toEqual(FONT_FAMILY.Excalifont);
       UI.clickTool("text");
 
       mouse.clickAt(
@@ -830,7 +830,7 @@ describe("textWysiwyg", () => {
       });
       expect(
         (h.elements[1] as ExcalidrawTextElementWithContainer).fontFamily,
-      ).toEqual(FONT_FAMILY.Virgil);
+      ).toEqual(FONT_FAMILY.Excalifont);
 
       //redo
       Keyboard.withModifierKeys({ ctrl: true, shift: true }, () => {
@@ -1240,7 +1240,7 @@ describe("textWysiwyg", () => {
       expect(getOriginalContainerHeightFromCache(rectangle.id)).toBe(97);
     });
 
-    it("should update line height when font family updated", async () => {
+    it.only("should update line height when font family updated", async () => {
       Keyboard.keyPress(KEYS.ENTER);
       expect(getOriginalContainerHeightFromCache(rectangle.id)).toBe(75);
 

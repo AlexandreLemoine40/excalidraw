@@ -2407,8 +2407,6 @@ class App extends React.Component<AppProps, AppState> {
     this.excalidrawContainerValue.container =
       this.excalidrawContainerRef.current;
 
-    Fonts.registerAll();
-
     if (import.meta.env.MODE === ENV.TEST || import.meta.env.DEV) {
       const setState = this.setState.bind(this);
       Object.defineProperties(window.h, {

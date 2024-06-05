@@ -41,9 +41,13 @@ Object.defineProperty(window, "FontFace", {
     }
 
     load() {
-      return window.document.fonts.load(this.family);
+      this.status = "loaded";
     }
   },
+});
+
+Object.defineProperty(document, "fonts", {
+  value: new Set(),
 });
 
 vi.mock("nanoid", () => {

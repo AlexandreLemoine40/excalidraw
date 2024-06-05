@@ -173,15 +173,12 @@ const VIETNAMESE_RANGE =
 export class Fonts {
   // it's ok to track fonts across multiple instances only once, so let's use
   // a static member to reduce memory footprint
-  private static loadedFontsCache = new Set<string>();
-  public static readonly registered: Map<
-    ValueOf<typeof FONT_FAMILY>,
-    { metrics: FontMetrics; fontFaces: ExcalidrawFontFace[] }
-  > = new Map();
+  private static readonly loadedFontsCache = new Set<string>();
+  public static readonly registered = Fonts.init();
 
-  private scene: Scene;
+  private readonly scene: Scene;
 
-  public get fontMetrics() {
+  public get metrics() {
     return Array.from(Fonts.registered.values()).map((x) => x.metrics);
   }
 
@@ -281,55 +278,62 @@ export class Fonts {
     family: ValueOf<typeof FONT_FAMILY>,
     metrics: FontMetrics,
     ...fontFaces: ExcalidrawFontFace[]
-  ): boolean {
-    const registeredFamily = Fonts.registered.get(family);
+  ) {
+    const registeredFamily = this.registered.get(family);
 
     if (!registeredFamily) {
-      Fonts.registered.set(family, {
+      this.registered.set(family, {
         metrics,
         fontFaces,
       });
-
-      return true;
     }
 
-    return false;
+    return this.registered;
   }
 
-  public static registerAll() {
-    // continue only if nothing was registered yet
-    if (Fonts.registered.size) {
-      return;
-    }
+  /**
+   * WARN: should be called just once on init, even across multiple instances.
+   */
+  private static init() {
+    const fonts = {
+      registered: new Map<
+        ValueOf<typeof FONT_FAMILY>,
+        { metrics: FontMetrics; fontFaces: ExcalidrawFontFace[] }
+      >(),
+    };
 
-    Fonts.register(
+    const register = Fonts.register.bind(fonts);
+
+    register(
       FONT_FAMILY.Virgil,
       FONT_METRICS[FONT_FAMILY.Virgil],
       new ExcalidrawFontFace("Virgil", Virgil),
     );
-    Fonts.register(
+    register(
       FONT_FAMILY.Excalifont,
       FONT_METRICS[FONT_FAMILY.Excalifont],
       new ExcalidrawFontFace("Excalifont", Excalifont),
     );
-    Fonts.register(
+    register(
       FONT_FAMILY.TeXGyreHeros,
       FONT_METRICS[FONT_FAMILY.TeXGyreHeros],
       new ExcalidrawFontFace("TeXGyreHeros", TeXGyreHeros),
     );
-    Fonts.register(
+    // keeping for backwards compatibility reasons, using system font
+    register(FONT_FAMILY.Helvetica, FONT_METRICS[FONT_FAMILY.Helvetica]);
+    register(
       FONT_FAMILY.Cascadia,
       FONT_METRICS[FONT_FAMILY.Cascadia],
       new ExcalidrawFontFace("Cascadia", Cascadia),
     );
-    Fonts.register(
+    register(
       FONT_FAMILY.ComicShanns,
       FONT_METRICS[FONT_FAMILY.ComicShanns],
       new ExcalidrawFontFace("ComicShanns", ComicShanns),
     );
 
     /** Assistant */
-    Fonts.register(
+    register(
       FONT_FAMILY.Assistant,
       FONT_METRICS[FONT_FAMILY.Assistant],
       new ExcalidrawFontFace("Assistant", AssistantRegular),
@@ -339,7 +343,7 @@ export class Fonts {
     );
 
     /** Bangers */
-    Fonts.register(
+    register(
       FONT_FAMILY.Bangers,
       FONT_METRICS[FONT_FAMILY.Bangers],
       new ExcalidrawFontFace("Bangers", BangersVietnamese, {
@@ -354,7 +358,7 @@ export class Fonts {
     );
 
     /** Nunito */
-    Fonts.register(
+    register(
       FONT_FAMILY.Nunito,
       FONT_METRICS[FONT_FAMILY.Nunito],
       new ExcalidrawFontFace("Nunito", NunitoCyrilicExt, {
@@ -375,7 +379,7 @@ export class Fonts {
     );
 
     /** Pacifico */
-    Fonts.register(
+    register(
       FONT_FAMILY.Pacifico,
       FONT_METRICS[FONT_FAMILY.Pacifico],
       new ExcalidrawFontFace("Pacifico", PacificoCyrlicExt, {
@@ -393,18 +397,14 @@ export class Fonts {
     );
 
     /** Permanent marker */
-    Fonts.register(
+    register(
       FONT_FAMILY.PermanentMarker,
       FONT_METRICS[FONT_FAMILY.PermanentMarker],
       new ExcalidrawFontFace("PermanentMarker", PermanentMarker, {
         unicodeRange: LATIN_RANGE,
       }),
     );
-  }
 
-  public static unregisterAll() {
-    for (const family of Fonts.registered.keys()) {
-      Fonts.registered.delete(family);
-    }
+    return fonts.registered;
   }
 }
