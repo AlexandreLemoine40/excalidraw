@@ -1,6 +1,8 @@
 const { build } = require("esbuild");
 const { sassPlugin } = require("esbuild-sass-plugin");
 const { externalGlobalPlugin } = require("esbuild-plugin-external-global");
+const { woff2BrowserPlugin } = require("./plugins/woff2");
+
 // Will be used later for treeshaking
 //const fs = require("fs");
 // const path = require("path");
@@ -43,6 +45,7 @@ const browserConfig = {
   format: "esm",
   plugins: [
     sassPlugin(),
+    woff2BrowserPlugin(),
     externalGlobalPlugin({
       react: "React",
       "react-dom": "ReactDOM",
@@ -50,7 +53,6 @@ const browserConfig = {
   ],
   splitting: true,
   loader: {
-    ".woff2": "copy",
     ".ttf": "copy",
   },
 };
@@ -61,6 +63,7 @@ const createESMBrowserBuild = async () => {
     outdir: "dist/browser/dev",
     sourcemap: true,
     chunkNames: "excalidraw-assets-dev/[name]-[hash]",
+    assetNames: "excalidraw-assets-dev/[name]-[hash]",
     define: {
       "import.meta.env": JSON.stringify({ DEV: true }),
     },
@@ -72,6 +75,7 @@ const createESMBrowserBuild = async () => {
     outdir: "dist/browser/prod",
     minify: true,
     chunkNames: "excalidraw-assets/[name]-[hash]",
+    assetNames: "excalidraw-assets/[name]-[hash]",
     define: {
       "import.meta.env": JSON.stringify({ PROD: true }),
     },
@@ -99,11 +103,8 @@ const rawConfig = {
   entryPoints: ["index.tsx"],
   bundle: true,
   format: "esm",
-  plugins: [
-    sassPlugin()
-  ],
+  plugins: [sassPlugin(), woff2BrowserPlugin()],
   loader: {
-    ".woff2": "copy",
     ".json": "copy",
   },
   packages: "external",

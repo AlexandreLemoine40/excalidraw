@@ -1,6 +1,10 @@
 import { defineConfig } from "vitest/config";
+import { ViteUrlToString } from "./excalidraw-app/vite.config.mjs";
 
 export default defineConfig({
+  plugins: [
+    ViteUrlToString(),
+  ],
   test: {
     setupFiles: ["./setupTests.ts"],
     globals: true,

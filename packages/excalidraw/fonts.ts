@@ -152,7 +152,7 @@ export class ExcalidrawFontFace extends FontFace {
     const mimeType = await response.headers.get("Content-Type");
     const buffer = await response.arrayBuffer();
 
-    return `data:${mimeType};base64,${stringToBase64(
+    return `data:${mimeType};base64,${await stringToBase64(
       await toByteString(buffer),
       true,
     )}`;

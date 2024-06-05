@@ -25,6 +25,27 @@ Object.defineProperty(window, "matchMedia", {
   })),
 });
 
+Object.defineProperty(window, "FontFace", {
+  enumerable: true,
+  value: class {
+    private family: string;
+    private source: string;
+    private descriptors: any;
+    private status: string;
+
+    constructor(family, source, descriptors) {
+      this.family = family;
+      this.source = source;
+      this.descriptors = descriptors;
+      this.status = "unloaded";
+    }
+
+    load() {
+      return window.document.fonts.load(this.family);
+    }
+  },
+});
+
 vi.mock("nanoid", () => {
   return {
     nanoid: vi.fn(() => "test-id"),

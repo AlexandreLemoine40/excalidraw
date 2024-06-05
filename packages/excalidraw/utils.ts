@@ -88,7 +88,7 @@ export const getFontFamilyString = ({
 }) => {
   for (const [fontFamilyString, id] of Object.entries(FONT_FAMILY)) {
     if (id === fontFamily) {
-      // FIXME_FONTS: we should fallback first to generic family names first, rather than directly to the emoji font
+      // TODO: we should fallback first to generic family names first, rather than directly to the emoji font
       return `${fontFamilyString}, ${WINDOWS_EMOJI_FALLBACK_FONT}`;
     }
   }
