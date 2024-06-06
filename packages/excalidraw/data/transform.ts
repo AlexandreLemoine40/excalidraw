@@ -19,7 +19,6 @@ import {
   newTextElement,
 } from "../element/newElement";
 import {
-  getDefaultLineHeight,
   measureText,
   normalizeText,
 } from "../element/textElement";
@@ -54,6 +53,7 @@ import {
 import { getSizeFromPoints } from "../points";
 import { randomId } from "../random";
 import { syncInvalidIndices } from "../fractionalIndex";
+import { getLineHeight } from "../fonts";
 
 export type ValidLinearElement = {
   type: "arrow" | "line";
@@ -569,7 +569,7 @@ export const convertToExcalidrawElements = (
         const fontFamily = element?.fontFamily || DEFAULT_FONT_FAMILY;
         const fontSize = element?.fontSize || DEFAULT_FONT_SIZE;
         const lineHeight =
-          element?.lineHeight || getDefaultLineHeight(fontFamily);
+          element?.lineHeight || getLineHeight(fontFamily);
         const text = element.text ?? "";
         const normalizedText = normalizeText(text);
         const metrics = measureText(

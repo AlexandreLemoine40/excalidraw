@@ -6,7 +6,6 @@ import React, {
   useCallback,
   type KeyboardEventHandler,
 } from "react";
-import { FONT_FAMILY } from "../../constants";
 import { useExcalidrawContainer } from "../App";
 import { PropertiesPopover } from "../PropertiesPopover";
 import { QuickSearch } from "../QuickSearch";
@@ -19,94 +18,17 @@ import { type FontFamilyValues } from "../../element/types";
 import { type Node, arrayToList, getFontFamilyString } from "../../utils";
 import { t } from "../../i18n";
 import { fontPickerKeyHandler } from "./keyboardNavHandlers";
+import { Fonts } from "../../fonts";
+import type { ValueOf } from "../../utility-types";
 
 export interface FontDescriptor {
   value: number;
-  text?: string;
+  text: string;
   badge?: {
-    type: string;
+    type: ValueOf<typeof DropDownMenuItemBadgeType>;
     placeholder: string;
   };
 }
-
-export const ALL_FONTS = [
-  {
-    value: FONT_FAMILY.Assistant,
-    text: "Assistant",
-    badge: {
-      type: DropDownMenuItemBadgeType.GREEN,
-      placeholder: t("fontList.badge.new"),
-    },
-  },
-  {
-    value: FONT_FAMILY.Bangers,
-    text: "Bangers",
-    badge: {
-      type: DropDownMenuItemBadgeType.GREEN,
-      placeholder: t("fontList.badge.new"),
-    },
-  },
-  {
-    value: FONT_FAMILY.Cascadia,
-    text: "Cascadia",
-  },
-  {
-    value: FONT_FAMILY.ComicShanns,
-    text: "Comic Shanns",
-    badge: {
-      type: DropDownMenuItemBadgeType.GREEN,
-      placeholder: t("fontList.badge.new"),
-    },
-  },
-  {
-    value: FONT_FAMILY.Excalifont,
-    text: "Excalifont",
-    badge: {
-      type: DropDownMenuItemBadgeType.GREEN,
-      placeholder: t("fontList.badge.new"),
-    },
-  },
-  {
-    value: FONT_FAMILY.Helvetica,
-    text: "Helvetica",
-  },
-  {
-    value: FONT_FAMILY.Nunito,
-    text: "Nunito",
-    badge: {
-      type: DropDownMenuItemBadgeType.GREEN,
-      placeholder: t("fontList.badge.new"),
-    },
-  },
-  {
-    value: FONT_FAMILY.Pacifico,
-    text: "Pacifico",
-    badge: {
-      type: DropDownMenuItemBadgeType.GREEN,
-      placeholder: t("fontList.badge.new"),
-    },
-  },
-  {
-    value: FONT_FAMILY.PermanentMarker,
-    text: "Permanent Marker",
-    badge: {
-      type: DropDownMenuItemBadgeType.GREEN,
-      placeholder: t("fontList.badge.new"),
-    },
-  },
-  {
-    value: FONT_FAMILY.TeXGyreHeros,
-    text: "TeX Gyre Heros",
-    badge: {
-      type: DropDownMenuItemBadgeType.GREEN,
-      placeholder: t("fontList.badge.new"),
-    },
-  },
-  {
-    value: FONT_FAMILY.Virgil,
-    text: "Virgil",
-  },
-];
 
 interface FontPickerListProps {
   selectedFontFamily: FontFamilyValues;
@@ -119,15 +41,38 @@ export const FontPickerList = React.memo(
     const { container } = useExcalidrawContainer();
     const [searchTerm, setSearchTerm] = useState("");
     const inputRef = useRef<HTMLInputElement>(null);
+    const allFonts = useMemo(
+      () =>
+        Array.from(Fonts.registered.entries())
+          .map(([familyId, { metrics, fontFaces }]) => {
+            const font = {
+              value: familyId,
+              text: fontFaces[0].fontFace.family,
+            };
+
+            if (metrics.badge === "new") {
+              Object.assign(font, {
+                badge: {
+                  type: DropDownMenuItemBadgeType.GREEN,
+                  placeholder: t("fontList.badge.new"),
+                },
+              });
+            }
+
+            return font as FontDescriptor;
+          })
+          .sort((a, b) => (a.text > b.text ? 1 : -1)),
+      [],
+    );
 
     const filteredFonts = useMemo(
       () =>
         arrayToList(
-          ALL_FONTS.filter((font) =>
+          allFonts.filter((font) =>
             font.text?.toLowerCase().includes(searchTerm),
           ),
         ),
-      [searchTerm],
+      [allFonts, searchTerm],
     );
 
     const getSelectedFont = useMemo(

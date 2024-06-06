@@ -31,7 +31,7 @@ import {
   updateOriginalContainerCache,
 } from "./containerCache";
 import type { ExtractSetType } from "../utility-types";
-import { FONT_METRICS, Fonts } from "../fonts";
+import { Fonts } from "../fonts";
 
 export const normalizeText = (text: string) => {
   return (
@@ -314,26 +314,6 @@ export const getLineHeightInPx = (
   lineHeight: ExcalidrawTextElement["lineHeight"],
 ) => {
   return fontSize * lineHeight;
-};
-
-/**
- * Calculates vertical offset for a text with alphabetic baseline.
- */
-export const getVerticalOffset = (
-  fontFamily: ExcalidrawTextElement["fontFamily"],
-  fontSize: ExcalidrawTextElement["fontSize"],
-  lineHeightPx: number,
-) => {
-  const { unitsPerEm, ascender, descender } =
-    Fonts.registered.get(fontFamily)?.metrics ||
-    FONT_METRICS[FONT_FAMILY.TeXGyreHeros];
-
-  const fontSizeEm = fontSize / unitsPerEm;
-  const lineGap =
-    (lineHeightPx - fontSizeEm * ascender + fontSizeEm * descender) / 2;
-
-  const verticalOffset = fontSizeEm * ascender + lineGap;
-  return verticalOffset;
 };
 
 // FIXME rename to getApproxMinContainerHeight
@@ -861,16 +841,4 @@ export const isMeasureTextSupported = () => {
     }),
   );
   return width > 0;
-};
-
-export const getDefaultLineHeight = (fontFamily: FontFamilyValues) => {
-  let { lineHeight } = FONT_METRICS[FONT_FAMILY.Virgil];
-
-  const family = Fonts.registered.get(fontFamily);
-
-  if (family?.metrics?.lineHeight) {
-    lineHeight = family.metrics.lineHeight;
-  }
-
-  return lineHeight as ExcalidrawTextElement["lineHeight"];
 };

@@ -62,10 +62,7 @@ import {
   redrawTextBoundingBox,
 } from "../element";
 import { mutateElement, newElementWith } from "../element/mutateElement";
-import {
-  getBoundTextElement,
-  getDefaultLineHeight,
-} from "../element/textElement";
+import { getBoundTextElement } from "../element/textElement";
 import {
   isBoundToContainer,
   isLinearElement,
@@ -93,6 +90,7 @@ import { hasStrokeColor } from "../scene/comparisons";
 import { arrayToMap, getShortcutKey } from "../utils";
 import { register } from "./register";
 import { StoreAction } from "../store";
+import { getLineHeight } from "../fonts";
 
 const FONT_SIZE_RELATIVE_INCREASE_STEP = 0.1;
 
@@ -746,7 +744,7 @@ export const actionChangeFontFamily = register({
               oldElement,
               {
                 fontFamily: currentItemFontFamily,
-                lineHeight: getDefaultLineHeight(currentItemFontFamily),
+                lineHeight: getLineHeight(currentItemFontFamily),
               },
             );
             redrawTextBoundingBox(

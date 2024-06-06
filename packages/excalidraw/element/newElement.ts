@@ -36,7 +36,6 @@ import {
   normalizeText,
   wrapText,
   getBoundTextMaxWidth,
-  getDefaultLineHeight,
 } from "./textElement";
 import {
   DEFAULT_ELEMENT_PROPS,
@@ -47,6 +46,7 @@ import {
   VERTICAL_ALIGN,
 } from "../constants";
 import type { MarkOptional, Merge, Mutable } from "../utility-types";
+import { getLineHeight } from "../fonts";
 
 export type ElementConstructorOpts = MarkOptional<
   Omit<ExcalidrawGenericElement, "id" | "type" | "isDeleted" | "updated">,
@@ -226,7 +226,7 @@ export const newTextElement = (
 ): NonDeleted<ExcalidrawTextElement> => {
   const fontFamily = opts.fontFamily || DEFAULT_FONT_FAMILY;
   const fontSize = opts.fontSize || DEFAULT_FONT_SIZE;
-  const lineHeight = opts.lineHeight || getDefaultLineHeight(fontFamily);
+  const lineHeight = opts.lineHeight || getLineHeight(fontFamily);
   const text = normalizeText(opts.text);
   const metrics = measureText(
     text,

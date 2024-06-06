@@ -60,7 +60,7 @@ export const DropDownMenuItemBadgeType = {
   GREEN: "green",
   RED: "red",
   BLUE: "blue",
-};
+} as const;
 
 export const DropDownMenuItemBadge = ({
   type = DropDownMenuItemBadgeType.BLUE,
