@@ -15,6 +15,7 @@ const DropdownMenuItem = ({
   className,
   hovered,
   selected,
+  textStyle,
   onSelect,
   onClick,
   ...rest
@@ -26,6 +27,7 @@ const DropdownMenuItem = ({
   shortcut?: string;
   hovered?: boolean;
   selected?: boolean;
+  textStyle?: React.CSSProperties,
   className?: string;
 } & Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "onSelect">) => {
   const handleClick = useHandleDropdownMenuItemClick(onClick, onSelect);
@@ -46,7 +48,7 @@ const DropdownMenuItem = ({
       className={getDropdownMenuItemClassName(className, selected, hovered)}
       title={rest.title ?? rest["aria-label"]}
     >
-      <MenuItemContent icon={icon} shortcut={shortcut}>
+      <MenuItemContent textStyle={textStyle} icon={icon} shortcut={shortcut}>
         {children}
       </MenuItemContent>
     </button>

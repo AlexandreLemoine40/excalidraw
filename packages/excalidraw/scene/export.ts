@@ -383,9 +383,9 @@ export const exportToSvg = async (
 
       return Promise.all(
         fontFaces.map(
-          async (face) => `@font-face {
-          font-family: ${face.family};
-          src: url(${await face.getContent()});
+          async (font) => `@font-face {
+          font-family: ${font.fontFace.family};
+          src: url(${await font.getContent()});
         }`,
         ),
       );

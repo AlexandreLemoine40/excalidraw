@@ -116,35 +116,42 @@ export const FONT_METRICS: Record<number, FontMetrics> = {
   },
 };
 
-export class ExcalidrawFontFace extends FontFace {
+export class ExcalidrawFont {
   public readonly uri: string;
+  public readonly url: URL;
+  public readonly fontFace: FontFace;
 
   constructor(family: string, uri: string, descriptors?: FontFaceDescriptors) {
-    super(family, `url("${uri}")`, {
+    this.uri = uri;
+    
+    // base urls will be applied for relative `uri`'s only
+    this.url = new URL(uri, window.EXCALIDRAW_ASSET_PATH ?? `https://unpkg.com/${import.meta.env.VITE_PKG_NAME}@${
+        import.meta.env.PKG_VERSION
+      }/dist/browser/prod/excalidraw-assets`);
+
+    this.fontFace = new FontFace(family, `url(${this.url.href})`, {
       display: "swap",
       style: "normal",
       weight: "400",
       ...descriptors,
     });
-
-    this.uri = uri;
   }
 
   public async getContent(): Promise<string> {
-    if (this.uri.startsWith("data:font/")) {
+    if (this.url.protocol === "data:") {
       // it's dataurl uri, the font is inlined as base64, no need to fetch
       return this.uri;
     }
 
     const response = await fetch(this.uri, {
       headers: {
-        Accept: "font/woff2, font/ttf",
+        Accept: "font/woff2",
       },
     });
 
     if (!response.ok) {
       console.error(
-        `Couldn't fetch font-family "${this.family}" from url ${this.uri}`,
+        `Couldn't fetch font-family "${this.fontFace.family}" from url ${this.uri}`,
         await response.json(),
       );
     }
@@ -180,6 +187,10 @@ export class Fonts {
 
   public get metrics() {
     return Array.from(Fonts.registered.values()).map((x) => x.metrics);
+  }
+
+  public get fontFaces() {
+    return Array.from(Fonts.registered.values()).map((x) => x.fontFaces);
   }
 
   public get sceneFamilies() {
@@ -228,7 +239,7 @@ export class Fonts {
         ShapeCache.delete(element);
         return newElementWith(element, {}, true);
       }
-      return element;
+      return element;``
     });
 
     if (didUpdate) {
@@ -247,9 +258,9 @@ export class Fonts {
    **/
   public load = async () => {
     for (const { fontFaces } of Fonts.registered.values()) {
-      for (const font of fontFaces) {
-        if (!document.fonts.has(font)) {
-          document.fonts.add(font);
+      for (const { fontFace} of fontFaces) {
+        if (!window.document.fonts.has(fontFace)) {
+          window.document.fonts.add(fontFace);
         }
       }
     }
@@ -263,8 +274,8 @@ export class Fonts {
           fontSize: 16,
         });
 
-        if (!document.fonts?.check?.(fontString)) {
-          return document.fonts?.load?.(fontString);
+        if (!window.document.fonts.check(fontString)) {
+          return window.document.fonts.load(fontString);
         }
 
         return undefined;
@@ -277,7 +288,7 @@ export class Fonts {
   public static register(
     family: ValueOf<typeof FONT_FAMILY>,
     metrics: FontMetrics,
-    ...fontFaces: ExcalidrawFontFace[]
+    ...fontFaces: ExcalidrawFont[]
   ) {
     const registeredFamily = this.registered.get(family);
 
@@ -298,7 +309,7 @@ export class Fonts {
     const fonts = {
       registered: new Map<
         ValueOf<typeof FONT_FAMILY>,
-        { metrics: FontMetrics; fontFaces: ExcalidrawFontFace[] }
+        { metrics: FontMetrics; fontFaces: ExcalidrawFont[] }
       >(),
     };
 
@@ -307,52 +318,52 @@ export class Fonts {
     register(
       FONT_FAMILY.Virgil,
       FONT_METRICS[FONT_FAMILY.Virgil],
-      new ExcalidrawFontFace("Virgil", Virgil),
+      new ExcalidrawFont("Virgil", Virgil),
     );
     register(
       FONT_FAMILY.Excalifont,
       FONT_METRICS[FONT_FAMILY.Excalifont],
-      new ExcalidrawFontFace("Excalifont", Excalifont),
+      new ExcalidrawFont("Excalifont", Excalifont),
     );
     register(
       FONT_FAMILY.TeXGyreHeros,
       FONT_METRICS[FONT_FAMILY.TeXGyreHeros],
-      new ExcalidrawFontFace("TeXGyreHeros", TeXGyreHeros),
+      new ExcalidrawFont("TeXGyreHeros", TeXGyreHeros),
     );
     // keeping for backwards compatibility reasons, using system font
     register(FONT_FAMILY.Helvetica, FONT_METRICS[FONT_FAMILY.Helvetica]);
     register(
       FONT_FAMILY.Cascadia,
       FONT_METRICS[FONT_FAMILY.Cascadia],
-      new ExcalidrawFontFace("Cascadia", Cascadia),
+      new ExcalidrawFont("Cascadia", Cascadia),
     );
     register(
       FONT_FAMILY.ComicShanns,
       FONT_METRICS[FONT_FAMILY.ComicShanns],
-      new ExcalidrawFontFace("ComicShanns", ComicShanns),
+      new ExcalidrawFont("ComicShanns", ComicShanns),
     );
 
     /** Assistant */
     register(
       FONT_FAMILY.Assistant,
       FONT_METRICS[FONT_FAMILY.Assistant],
-      new ExcalidrawFontFace("Assistant", AssistantRegular),
-      new ExcalidrawFontFace("Assistant", AssistantMedium, { weight: "500" }),
-      new ExcalidrawFontFace("Assistant", AssistantSemiBold, { weight: "600" }),
-      new ExcalidrawFontFace("Assistant", AssistantBold, { weight: "700" }),
+      new ExcalidrawFont("Assistant", AssistantRegular),
+      new ExcalidrawFont("Assistant", AssistantMedium, { weight: "500" }),
+      new ExcalidrawFont("Assistant", AssistantSemiBold, { weight: "600" }),
+      new ExcalidrawFont("Assistant", AssistantBold, { weight: "700" }),
     );
 
     /** Bangers */
     register(
       FONT_FAMILY.Bangers,
       FONT_METRICS[FONT_FAMILY.Bangers],
-      new ExcalidrawFontFace("Bangers", BangersVietnamese, {
+      new ExcalidrawFont("Bangers", BangersVietnamese, {
         unicodeRange: VIETNAMESE_RANGE,
       }),
-      new ExcalidrawFontFace("Bangers", BangersLatinExt, {
+      new ExcalidrawFont("Bangers", BangersLatinExt, {
         unicodeRange: LATIN_EXT_RANGE,
       }),
-      new ExcalidrawFontFace("Bangers", BangersLatin, {
+      new ExcalidrawFont("Bangers", BangersLatin, {
         unicodeRange: LATIN_RANGE,
       }),
     );
@@ -361,19 +372,19 @@ export class Fonts {
     register(
       FONT_FAMILY.Nunito,
       FONT_METRICS[FONT_FAMILY.Nunito],
-      new ExcalidrawFontFace("Nunito", NunitoCyrilicExt, {
+      new ExcalidrawFont("Nunito", NunitoCyrilicExt, {
         unicodeRange: CYRILIC_EXT_RANGE,
       }),
-      new ExcalidrawFontFace("Nunito", NunitoCyrilic, {
+      new ExcalidrawFont("Nunito", NunitoCyrilic, {
         unicodeRange: CYRILIC_RANGE,
       }),
-      new ExcalidrawFontFace("Nunito", NunitoVietnamese, {
+      new ExcalidrawFont("Nunito", NunitoVietnamese, {
         unicodeRange: VIETNAMESE_RANGE,
       }),
-      new ExcalidrawFontFace("Nunito", NunitoLatinExt, {
+      new ExcalidrawFont("Nunito", NunitoLatinExt, {
         unicodeRange: LATIN_EXT_RANGE,
       }),
-      new ExcalidrawFontFace("Nunito", NunitoLatin, {
+      new ExcalidrawFont("Nunito", NunitoLatin, {
         unicodeRange: LATIN_RANGE,
       }),
     );
@@ -382,16 +393,16 @@ export class Fonts {
     register(
       FONT_FAMILY.Pacifico,
       FONT_METRICS[FONT_FAMILY.Pacifico],
-      new ExcalidrawFontFace("Pacifico", PacificoCyrlicExt, {
+      new ExcalidrawFont("Pacifico", PacificoCyrlicExt, {
         unicodeRange: CYRILIC_EXT_RANGE,
       }),
-      new ExcalidrawFontFace("Pacifico", PacificoVietnamese, {
+      new ExcalidrawFont("Pacifico", PacificoVietnamese, {
         unicodeRange: VIETNAMESE_RANGE,
       }),
-      new ExcalidrawFontFace("Pacifico", PacificoLatinExt, {
+      new ExcalidrawFont("Pacifico", PacificoLatinExt, {
         unicodeRange: LATIN_EXT_RANGE,
       }),
-      new ExcalidrawFontFace("Pacifico", PacificoLatin, {
+      new ExcalidrawFont("Pacifico", PacificoLatin, {
         unicodeRange: LATIN_RANGE,
       }),
     );
@@ -400,7 +411,7 @@ export class Fonts {
     register(
       FONT_FAMILY.PermanentMarker,
       FONT_METRICS[FONT_FAMILY.PermanentMarker],
-      new ExcalidrawFontFace("PermanentMarker", PermanentMarker, {
+      new ExcalidrawFont("PermanentMarker", PermanentMarker, {
         unicodeRange: LATIN_RANGE,
       }),
     );

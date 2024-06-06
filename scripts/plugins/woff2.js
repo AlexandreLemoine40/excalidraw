@@ -13,7 +13,12 @@ module.exports.woff2BrowserPlugin = () => {
   return {
     name: "woff2BrowserPlugin",
     setup(build) {
-      build.onResolve({ filter: /\.woff2$/ }, (args) => {
+      build.initialOptions.loader = {
+        ".woff2": "file",
+        ...build.initialOptions.loader
+      };
+
+      build.onResolve({ filter: /^https:\/\/.+?\.woff2$/ }, (args) => {
         return {
           path: args.path,
           namespace: "woff2BrowserPlugin",
@@ -23,18 +28,11 @@ module.exports.woff2BrowserPlugin = () => {
       build.onLoad(
         { filter: /.*/, namespace: "woff2BrowserPlugin" },
         async (args) => {
-          if (args.path.startsWith("http")) {
-            return {
-              contents: args.path,
-              loader: "text",
-            };
-          }
-
           return {
             contents: args.path,
-            loader: "file",
+            loader: "text",
           };
-        },
+        }
       );
     },
   };

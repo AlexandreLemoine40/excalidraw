@@ -184,7 +184,7 @@ export const FontPickerList = React.memo(
             <DropdownMenuItem
               key={font.value}
               value={font.value}
-              style={{
+              textStyle={{
                 fontFamily: getFontFamilyString({ fontFamily: font.value }),
               }}
               hovered={font.value === currentFont?.value}
