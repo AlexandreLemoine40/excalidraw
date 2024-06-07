@@ -15,7 +15,7 @@ module.exports.woff2BrowserPlugin = () => {
     setup(build) {
       build.initialOptions.loader = {
         ".woff2": "file",
-        ...build.initialOptions.loader
+        ...build.initialOptions.loader,
       };
 
       build.onResolve({ filter: /^https:\/\/.+?\.woff2$/ }, (args) => {
@@ -32,7 +32,7 @@ module.exports.woff2BrowserPlugin = () => {
             contents: args.path,
             loader: "text",
           };
-        }
+        },
       );
     },
   };
@@ -68,6 +68,10 @@ module.exports.woff2ServerPlugin = (options = {}) => {
       throw e;
     }
   }
+
+  const notoEmojiBuffer = fs.readFileSync(
+    path.resolve(__dirname, "./NotoEmoji-Regular.ttf"),
+  );
 
   return {
     name: "woff2ServerPlugin",
@@ -141,6 +145,7 @@ module.exports.woff2ServerPlugin = (options = {}) => {
         },
       );
 
+      // TODO: strip away some unnecessary glyphs
       build.onEnd(() => {
         if (!generateTtf) {
           return;
@@ -154,29 +159,39 @@ module.exports.woff2ServerPlugin = (options = {}) => {
         for (const [family, { Regular }] of sortedFonts) {
           // merge same previous woff2 subfamilies into one font
           const [head, ...tail] = Regular;
-          const font = tail
+          const mergedFont = tail
             .reduce((acc, curr) => {
               return acc.merge(curr);
             }, head)
             .sort();
 
-          // FIXME_FONTS: merge with emoji font
+          // merge with emoji font
+          const font = mergedFont.merge(
+            Font.create(notoEmojiBuffer, { type: "ttf" }),
+          );
 
           // deduplicate glyphs by name+unicode due to merge
-          // TODO: think about stripping away some unnecessary glyphs
           const uniqueGlyphs = new Set();
           const glyphs = [...font.data.glyf].filter((x) => {
             if (!x.unicode) {
               return true;
             }
 
-            if (!uniqueGlyphs.has(x.name + x.unicode.toString())) {
-              uniqueGlyphs.add(x.name + x.unicode.toString());
+            if (!uniqueGlyphs.has(x.unicode.toString())) {
+              uniqueGlyphs.add(x.unicode.toString());
               return true;
             }
 
             return false;
           });
+
+          // deduplucate ".notdef" glyph as it's unicodes are not cleaned after merge
+          const notDefGlyph = glyphs.find((x) => x.name === ".notdef");
+          if (notDefGlyph && Array.isArray(notDefGlyph.unicode)) {
+            notDefGlyph.unicode = notDefGlyph.unicode.filter(
+              (x) => !uniqueGlyphs.has(x.toString()),
+            );
+          }
 
           const duplicateGlyphssLength = font.data.glyf.length - glyphs.length;
 

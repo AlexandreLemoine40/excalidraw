@@ -6,7 +6,6 @@ import type {
   ExcalidrawTextContainer,
   ExcalidrawTextElement,
   ExcalidrawTextElementWithContainer,
-  FontFamilyValues,
   FontString,
   NonDeletedExcalidrawElement,
 } from "./types";
@@ -15,7 +14,6 @@ import {
   ARROW_LABEL_FONT_SIZE_TO_MIN_WIDTH_RATIO,
   ARROW_LABEL_WIDTH_FRACTION,
   BOUND_TEXT_PADDING,
-  FONT_FAMILY,
   DEFAULT_FONT_FAMILY,
   DEFAULT_FONT_SIZE,
   TEXT_ALIGN,
@@ -31,7 +29,6 @@ import {
   updateOriginalContainerCache,
 } from "./containerCache";
 import type { ExtractSetType } from "../utility-types";
-import { Fonts } from "../fonts";
 
 export const normalizeText = (text: string) => {
   return (

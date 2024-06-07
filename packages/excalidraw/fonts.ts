@@ -127,6 +127,17 @@ const DEFAULT_FONT_METRICS: Record<number, FontMetrics> = {
   },
 };
 
+/** Unicode ranges */
+const LATIN_RANGE =
+  "U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD";
+const LATIN_EXT_RANGE =
+  "U+0100-02AF, U+0304, U+0308, U+0329, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF";
+const CYRILIC_EXT_RANGE =
+  "U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F";
+const CYRILIC_RANGE = "U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116";
+const VIETNAMESE_RANGE =
+  "U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB";
+
 /**
  * Calculates vertical offset for a text with alphabetic baseline.
  */
@@ -153,29 +164,26 @@ export const getVerticalOffset = (
 export const getLineHeight = (fontFamily: FontFamilyValues) => {
   const { lineHeight } =
     Fonts.registered.get(fontFamily)?.metrics ||
-    DEFAULT_FONT_METRICS[FONT_FAMILY.Virgil];
+    DEFAULT_FONT_METRICS[FONT_FAMILY.Excalifont];
 
   return lineHeight as ExcalidrawTextElement["lineHeight"];
 };
 
 class ExcalidrawFont {
-  public readonly uri: string;
   public readonly url: URL;
   public readonly fontFace: FontFace;
 
   constructor(family: string, uri: string, descriptors?: FontFaceDescriptors) {
-    this.uri = uri;
-
     // base urls will be applied for relative `uri`'s only
     this.url = new URL(
       uri,
       window.EXCALIDRAW_ASSET_PATH ??
         `https://unpkg.com/${import.meta.env.VITE_PKG_NAME}@${
           import.meta.env.PKG_VERSION
-        }/dist/browser/prod/excalidraw-assets`,
+        }/dist/prod/`,
     );
 
-    this.fontFace = new FontFace(family, `url(${this.url.href})`, {
+    this.fontFace = new FontFace(family, `url(${this.url})`, {
       display: "swap",
       style: "normal",
       weight: "400",
@@ -186,10 +194,10 @@ class ExcalidrawFont {
   public async getContent(): Promise<string> {
     if (this.url.protocol === "data:") {
       // it's dataurl uri, the font is inlined as base64, no need to fetch
-      return this.uri;
+      return this.url.toString();
     }
 
-    const response = await fetch(this.uri, {
+    const response = await fetch(this.url, {
       headers: {
         Accept: "font/woff2",
       },
@@ -197,7 +205,7 @@ class ExcalidrawFont {
 
     if (!response.ok) {
       console.error(
-        `Couldn't fetch font-family "${this.fontFace.family}" from url ${this.uri}`,
+        `Couldn't fetch font-family "${this.fontFace.family}" from url "${this.url}"`,
         await response.json(),
       );
     }
@@ -212,17 +220,6 @@ class ExcalidrawFont {
   }
 }
 
-/** Unicode ranges */
-const LATIN_RANGE =
-  "U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD";
-const LATIN_EXT_RANGE =
-  "U+0100-02AF, U+0304, U+0308, U+0329, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF";
-const CYRILIC_EXT_RANGE =
-  "U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F";
-const CYRILIC_RANGE = "U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116";
-const VIETNAMESE_RANGE =
-  "U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB";
-
 export class Fonts {
   // it's ok to track fonts across multiple instances only once, so let's use
   // a static member to reduce memory footprint
@@ -231,21 +228,19 @@ export class Fonts {
 
   private readonly scene: Scene;
 
-  public get metrics() {
-    return Array.from(Fonts.registered.values()).map((x) => x.metrics);
-  }
-
-  public get fontFaces() {
-    return Array.from(Fonts.registered.values()).map((x) => x.fontFaces);
+  public get registered() {
+    return Fonts.registered;
   }
 
   public get sceneFamilies() {
-    return this.scene.getNonDeletedElements().reduce((families, element) => {
-      if (isTextElement(element)) {
-        families.add(element.fontFamily);
-      }
-      return families;
-    }, new Set<number>());
+    return Array.from(
+      this.scene.getNonDeletedElements().reduce((families, element) => {
+        if (isTextElement(element)) {
+          families.add(element.fontFamily);
+        }
+        return families;
+      }, new Set<number>()),
+    );
   }
 
   constructor({ scene }: { scene: Scene }) {
@@ -293,16 +288,8 @@ export class Fonts {
     }
   };
 
-  /**
-   * Best UX comes from preloading all regular fonts on scene init (asynchronously) as it avoids:
-   * - rendering fallback font, new font download & swap (flick) on font selection
-   * - rendering wrong text bb on font selection due to fallback
-   * - avoids detecting and dynamically loading fonts on remote client changes
-   * - avoids hardcoding SVG for preview / icons in font list
-   *
-   * In the future, for bigger fonts (i.e. CJK), custom fonts or rich text (bold/italic), we might prefer to swap (fallback to regular first) and dynamically load the specific font based on the family & glyhps used.
-   **/
   public load = async () => {
+    // Add all registered font faces into the `document.fonts` (if not added already)
     for (const { fontFaces } of Fonts.registered.values()) {
       for (const { fontFace } of fontFaces) {
         if (!window.document.fonts.has(fontFace)) {
@@ -311,20 +298,29 @@ export class Fonts {
       }
     }
 
-    // FIXME_FONTS: don't let it all fail if just one font fails to load
     const loaded = await Promise.all(
-      // TODO: loading all fonts to mitigate initial edge cases, slowly we could transition into loading just scene fonts and on change loading & redrawing
-      Array.from(Fonts.registered.keys()).map((fontFamily) => {
+      this.sceneFamilies.map(async (fontFamily) => {
         const fontString = getFontString({
           fontFamily,
           fontSize: 16,
         });
 
+        // WARN: without "text" param it does not have to mean that all font faces are loaded, instead it could be just one!
         if (!window.document.fonts.check(fontString)) {
-          return window.document.fonts.load(fontString);
+          try {
+            // WARN: browser prioritizes loading only font faces with unicode ranges for characters which are present in the document (html & canvas), other font faces could stay unloaded
+            // we might want to retry here, i.e.  in case CDN is down, but so far I didn't experience any issues - maybe it handles retry-like logic under the hood
+            return await window.document.fonts.load(fontString);
+          } catch (e) {
+            // don't let it all fail if just one font fails to load
+            console.error(
+              `Failed to load font: "${fontString}" with error "${e}", given the following registered fonts:`,
+              JSON.stringify(Fonts.registered.get(fontFamily), undefined, 2),
+            );
+          }
         }
 
-        return undefined;
+        return Promise.resolve();
       }),
     );
 
@@ -344,7 +340,7 @@ export class Fonts {
     ...params: Array<{ uri: string; descriptors?: FontFaceDescriptors }>
   ) {
     // TODO: likely we will need to abandon number "id" in order to support custom fonts
-    const familyId = FONT_FAMILY[family];
+    const familyId = FONT_FAMILY[family as keyof typeof FONT_FAMILY];
     const registeredFamily = this.registered.get(familyId);
 
     if (!registeredFamily) {

@@ -120,7 +120,7 @@ export const CLASSES = {
  * - https://drafts.csswg.org/css-fonts-4/#font-family-prop
  * - https://learn.microsoft.com/en-us/typography/opentype/spec/ibmfc
  */
-export const FONT_FAMILY= {
+export const FONT_FAMILY = {
   Virgil: 1,
   Helvetica: 2,
   Cascadia: 3,
@@ -129,10 +129,10 @@ export const FONT_FAMILY= {
   Nunito: 6,
   Pacifico: 7,
   Bangers: 8,
-  ["Comic Shanns"]: 9,
-  ["Permanent Marker"]: 10,
-  ["TeX Gyre Heros"]: 11,
-} as Record<string, number>;
+  "Comic Shanns": 9,
+  "Permanent Marker": 10,
+  "TeX Gyre Heros": 11,
+};
 
 export const THEME = {
   LIGHT: "light",
