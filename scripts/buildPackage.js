@@ -1,7 +1,7 @@
 const { build } = require("esbuild");
 const { sassPlugin } = require("esbuild-sass-plugin");
 const { externalGlobalPlugin } = require("esbuild-plugin-external-global");
-const { woff2BrowserPlugin } = require("./plugins/woff2");
+const { woff2BrowserPlugin } = require("./woff2/esbuild-plugins");
 
 // Will be used later for treeshaking
 //const fs = require("fs");
@@ -52,9 +52,6 @@ const browserConfig = {
     }),
   ],
   splitting: true,
-  loader: {
-    ".ttf": "copy",
-  },
 };
 const createESMBrowserBuild = async () => {
   // Development unminified build with source maps

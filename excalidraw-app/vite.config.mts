@@ -1,10 +1,11 @@
-import { PluginOption, defineConfig, loadEnv } from "vite";
+import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
 import svgrPlugin from "vite-plugin-svgr";
 import { ViteEjsPlugin } from "vite-plugin-ejs";
 import { VitePWA } from "vite-plugin-pwa";
 import checker from "vite-plugin-checker";
 import { createHtmlPlugin } from "vite-plugin-html";
+import { woff2BrowserPlugin } from "../scripts/woff2/woff2-vite-plugins";
 
 // To load .env.local variables
 const envVars = loadEnv("", `../`);
@@ -48,7 +49,7 @@ export default defineConfig({
     sourcemap: true,
   },
   plugins: [
-    ViteUrlToString(),
+    woff2BrowserPlugin(),
     react(),
     checker({
       typescript: true,
@@ -194,44 +195,3 @@ export default defineConfig({
   ],
   publicDir: "../public",
 });
-
-/**
- * Extending Vite to resolve url's to fonts imported as esm modules, similar to what esbuild does with "file" loader.
- */
-export function ViteUrlToString(): PluginOption {
-  // for now limited to woff2 only, might be extended to any assets in the future
-  const regex = /^https:\/\/.+?\.woff2$/;
-  let isDev: boolean;
-
-  return {
-    name: "url-import-to-string",
-    enforce: "pre" as const,
-    config(_, { command }) {
-      isDev = command === "serve";
-    },
-    resolveId(source) {
-      if (!regex.test(source)) {
-        return null;
-      };
-        
-      // getting the url to the dependency tree
-      return source;
-    },
-    load(id) {
-      if (!regex.test(id)) {
-        return null;
-      };
-
-      // loading the url as string
-      return `export default "${id}"`;
-    },
-    // necessary for dev as vite / rollup does skips https imports in serve (~dev) mode
-    // aka dev mode equivalent of "export default x" above (resolveId + load)
-    transform(code, id) {
-      // treat https woff2 imports as a text
-      if (isDev && id.endsWith("/excalidraw/fonts.ts")) {
-        return code.replaceAll(/import\s+(\w+)\s+from\s+(["']https:\/\/.+?\.woff2["'])/g, `const $1 = $2`);
-      }
-    }
-  }
-}

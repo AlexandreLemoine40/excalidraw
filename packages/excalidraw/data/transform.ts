@@ -18,10 +18,7 @@ import {
   newMagicFrameElement,
   newTextElement,
 } from "../element/newElement";
-import {
-  measureText,
-  normalizeText,
-} from "../element/textElement";
+import { measureText, normalizeText } from "../element/textElement";
 import type {
   ElementsMap,
   ExcalidrawArrowElement,
@@ -568,8 +565,7 @@ export const convertToExcalidrawElements = (
       case "text": {
         const fontFamily = element?.fontFamily || DEFAULT_FONT_FAMILY;
         const fontSize = element?.fontSize || DEFAULT_FONT_SIZE;
-        const lineHeight =
-          element?.lineHeight || getLineHeight(fontFamily);
+        const lineHeight = element?.lineHeight || getLineHeight(fontFamily);
         const text = element.text ?? "";
         const normalizedText = normalizeText(text);
         const metrics = measureText(

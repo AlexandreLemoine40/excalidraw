@@ -131,7 +131,7 @@ export const FONT_FAMILY = {
   Bangers: 8,
   "Comic Shanns": 9,
   "Permanent Marker": 10,
-  "TeX Gyre Heros": 11,
+  "Liberation Sans": 11,
 };
 
 export const THEME = {

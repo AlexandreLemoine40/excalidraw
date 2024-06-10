@@ -1,9 +1,9 @@
 import { defineConfig } from "vitest/config";
-import { ViteUrlToString } from "./excalidraw-app/vite.config.mjs";
+import { woff2BrowserPlugin } from "./scripts/woff2-plugins/woff2-vite-plugins";
 
 export default defineConfig({
   plugins: [
-    ViteUrlToString(),
+    woff2BrowserPlugin(),
   ],
   test: {
     setupFiles: ["./setupTests.ts"],

@@ -8,6 +8,8 @@ const { Font } = require("fonteditor-core");
 /**
  * Custom esbuild plugin to convert url woff2 imports into a text.
  * Other woff2 imports are handled by a "file" loader.
+ *
+ * @returns {import("esbuild").Plugin}
  */
 module.exports.woff2BrowserPlugin = () => {
   return {
@@ -46,6 +48,8 @@ module.exports.woff2BrowserPlugin = () => {
  *    - deduplicating glyphs due to the merge process
  *    - merging emoji font for each
  *    - printing out font metrics
+ *
+ * @returns {import("esbuild").Plugin}
  */
 module.exports.woff2ServerPlugin = (options = {}) => {
   // google CDN fails time to time, so let's retry
@@ -70,7 +74,7 @@ module.exports.woff2ServerPlugin = (options = {}) => {
   }
 
   const notoEmojiBuffer = fs.readFileSync(
-    path.resolve(__dirname, "./NotoEmoji-Regular.ttf"),
+    path.resolve(__dirname, "./assets/NotoEmoji-Regular.ttf"),
   );
 
   return {
@@ -157,7 +161,7 @@ module.exports.woff2ServerPlugin = (options = {}) => {
 
         // for now we are interested in the regular families only
         for (const [family, { Regular }] of sortedFonts) {
-          // merge same previous woff2 subfamilies into one font
+          // merge same previous woff2 subfamilies into one font and sort the glpyhs
           const [head, ...tail] = Regular;
           const mergedFont = tail
             .reduce((acc, curr) => {

@@ -4,6 +4,7 @@ import {
   diamondFixture,
   ellipseFixture,
   rectangleWithLinkFixture,
+  textFixture,
 } from "../fixtures/elementFixture";
 import { API } from "../helpers/api";
 import { exportToCanvas, exportToSvg } from "../../../utils";
@@ -26,6 +27,12 @@ describe("exportToSvg", () => {
       height: ELEMENT_HEIGHT,
       width: ELEMENT_WIDTH,
       index: "a1",
+    },
+    {
+      ...textFixture,
+      height: ELEMENT_HEIGHT,
+      width: ELEMENT_WIDTH,
+      index: "a2",
     },
   ] as NonDeletedExcalidrawElement[];
 
