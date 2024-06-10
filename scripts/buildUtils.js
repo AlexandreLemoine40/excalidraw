@@ -4,7 +4,7 @@ const { sassPlugin } = require("esbuild-sass-plugin");
 const {
   woff2BrowserPlugin,
   woff2ServerPlugin,
-} = require("./woff2/esbuild-plugins");
+} = require("./woff2/woff2-esbuild-plugins");
 
 const browserConfig = {
   entryPoints: ["index.ts"],

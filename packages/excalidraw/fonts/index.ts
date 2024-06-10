@@ -192,7 +192,7 @@ export class Fonts {
       uri: Excalifont,
     });
 
-    // keeping for backwards compatibility reasons, using system font
+    // keeping for backwards compatibility reasons, uses system font (Helvetica on MacOS, Arial on Win)
     register("Helvetica", DEFAULT_FONT_METRICS[FONT_FAMILY.Helvetica], {
       uri: "",
     });

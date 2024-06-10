@@ -31,7 +31,7 @@ export interface FontDescriptor {
 }
 
 interface FontPickerListProps {
-  selectedFontFamily: FontFamilyValues;
+  selectedFontFamily: FontFamilyValues | null;
   onPick: (value: number) => void;
   onClose: () => void;
 }
@@ -44,6 +44,7 @@ export const FontPickerList = React.memo(
     const allFonts = useMemo(
       () =>
         Array.from(Fonts.registered.entries())
+          .filter(([_, { metrics }]) => !metrics.hidden)
           .map(([familyId, { metrics, fontFaces }]) => {
             const font = {
               value: familyId,

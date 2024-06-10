@@ -7,7 +7,7 @@ import { t } from "../../i18n";
 import { isCustomFont } from "./FontPicker";
 
 interface FontPickerTriggerProps {
-  selectedFontFamily: FontFamilyValues;
+  selectedFontFamily: FontFamilyValues | null;
 }
 
 export const FontPickerTrigger = ({

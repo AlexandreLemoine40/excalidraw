@@ -1,3 +1,4 @@
+import type { ValueOf } from "../utility-types";
 import { FONT_FAMILY } from "../constants";
 
 /** For head & hhea metrics read the woff2 with https://fontdrop.info/  */
@@ -10,8 +11,10 @@ export interface FontMetrics {
   descender: number;
   /** harcoded unitless line-height, https://github.com/excalidraw/excalidraw/pull/6360#issuecomment-1477635971 */
   lineHeight: number;
-  /**  */
+  /** flag to display a new badge */
   badge?: "new";
+  /** flag to hide a font from the picker */
+  hidden?: boolean;
 }
 
 export const DEFAULT_FONT_METRICS: Record<number, FontMetrics> = {
@@ -33,6 +36,7 @@ export const DEFAULT_FONT_METRICS: Record<number, FontMetrics> = {
     ascender: 1577,
     descender: -471,
     lineHeight: 1.15,
+    hidden: true,
   },
   [FONT_FAMILY.Cascadia]: {
     unitsPerEm: 2048,

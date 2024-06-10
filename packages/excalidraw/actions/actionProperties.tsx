@@ -776,33 +776,33 @@ export const actionChangeFontFamily = register({
         <legend>{t("labels.fontFamily")}</legend>
         <FontPicker
           isOpened={appState.openPopup === "fontFamily"}
-          selectedFontFamily={
-            getFormValue(
-              elements,
-              appState,
-              (element) => {
-                if (isTextElement(element)) {
-                  return element.fontFamily;
-                }
-                const boundTextElement = getBoundTextElement(
-                  element,
-                  app.scene.getNonDeletedElementsMap(),
-                );
-                if (boundTextElement) {
-                  return boundTextElement.fontFamily;
-                }
-                return null;
-              },
-              (element) =>
-                isTextElement(element) ||
-                getBoundTextElement(
-                  element,
-                  app.scene.getNonDeletedElementsMap(),
-                ) !== null,
-              (hasSelection) =>
-                hasSelection ? null : appState.currentItemFontFamily,
-            ) || DEFAULT_FONT_FAMILY
-          }
+          selectedFontFamily={getFormValue(
+            elements,
+            appState,
+            (element) => {
+              if (isTextElement(element)) {
+                return element.fontFamily;
+              }
+              const boundTextElement = getBoundTextElement(
+                element,
+                app.scene.getNonDeletedElementsMap(),
+              );
+              if (boundTextElement) {
+                return boundTextElement.fontFamily;
+              }
+              return null;
+            },
+            (element) =>
+              isTextElement(element) ||
+              getBoundTextElement(
+                element,
+                app.scene.getNonDeletedElementsMap(),
+              ) !== null,
+            (hasSelection) =>
+              hasSelection
+                ? null
+                : appState.currentItemFontFamily || DEFAULT_FONT_FAMILY,
+          )}
           onChange={(fontFamily) => {
             updateData({ currentItemFontFamily: fontFamily } as Pick<
               AppState,

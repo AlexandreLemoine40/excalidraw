@@ -24,7 +24,7 @@ export const DEFAULT_FONTS = [
     testId: "font-family-handrawn",
   },
   {
-    value: FONT_FAMILY.Helvetica,
+    value: FONT_FAMILY["Liberation Sans"],
     icon: FontFamilyNormalIcon,
     text: t("labels.normal"),
     testId: "font-family-normal",
@@ -37,13 +37,13 @@ export const DEFAULT_FONTS = [
   },
 ];
 
-export const isCustomFont = (fontFamily: number) => {
+export const isCustomFont = (fontFamily: number | null) => {
   return !DEFAULT_FONTS.find((x) => x.value === fontFamily);
 };
 
 interface FontPickerProps {
   isOpened: boolean;
-  selectedFontFamily: FontFamilyValues;
+  selectedFontFamily: FontFamilyValues | null;
   onChange: (fontFamily: FontFamilyValues) => void;
   onPopupChange: (isOpened: boolean) => void;
 }

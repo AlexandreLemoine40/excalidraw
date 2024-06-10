@@ -1,7 +1,7 @@
 const { build } = require("esbuild");
 const { sassPlugin } = require("esbuild-sass-plugin");
 const { externalGlobalPlugin } = require("esbuild-plugin-external-global");
-const { woff2BrowserPlugin } = require("./woff2/esbuild-plugins");
+const { woff2BrowserPlugin } = require("./woff2/woff2-esbuild-plugins");
 
 // Will be used later for treeshaking
 //const fs = require("fs");
