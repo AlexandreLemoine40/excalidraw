@@ -6,6 +6,7 @@ import {
 import MenuItemContent from "./DropdownMenuItemContent";
 import { useExcalidrawAppState } from "../App";
 import { THEME } from "../../constants";
+import type { ValueOf } from "../../utility-types";
 
 const DropdownMenuItem = ({
   icon,
@@ -58,7 +59,6 @@ DropdownMenuItem.displayName = "DropdownMenuItem";
 
 export const DropDownMenuItemBadgeType = {
   GREEN: "green",
-  RED: "red",
   BLUE: "blue",
 } as const;
 
@@ -66,7 +66,7 @@ export const DropDownMenuItemBadge = ({
   type = DropDownMenuItemBadgeType.BLUE,
   children,
 }: {
-  type?: typeof DropDownMenuItemBadgeType[keyof typeof DropDownMenuItemBadgeType];
+  type?: ValueOf<typeof DropDownMenuItemBadgeType>;
   children: React.ReactNode;
 }) => {
   const { theme } = useExcalidrawAppState();
@@ -85,12 +85,6 @@ export const DropDownMenuItemBadge = ({
       Object.assign(style, {
         backgroundColor: "var(--background-color-badge)",
         color: "var(--color-badge)",
-      });
-      break;
-    case DropDownMenuItemBadgeType.RED:
-      Object.assign(style, {
-        backgroundColor: "pink",
-        color: "darkred",
       });
       break;
     case DropDownMenuItemBadgeType.BLUE:

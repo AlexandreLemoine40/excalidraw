@@ -11,7 +11,6 @@ import { exportToCanvas, exportToSvg } from "../../../utils";
 import { FRAME_STYLE } from "../../constants";
 import { prepareElementsForExport } from "../../data";
 
-// FIXME_FONTS: add test cases for font inlining
 describe("exportToSvg", () => {
   const ELEMENT_HEIGHT = 100;
   const ELEMENT_WIDTH = 100;

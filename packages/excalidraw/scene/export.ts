@@ -274,6 +274,7 @@ export const exportToSvg = async (
      */
     renderEmbeddables?: boolean;
     exportingFrame?: ExcalidrawFrameLikeElement | null;
+    skipInliningFonts?: true;
   },
 ): Promise<SVGSVGElement> => {
   const frameRendering = getFrameRenderingConfig(
@@ -369,28 +370,30 @@ export const exportToSvg = async (
     return acc;
   }, new Set<number>());
 
-  const fontFaces = await Promise.all(
-    Array.from(fontFamilies).map(async (x) => {
-      const { fontFaces } = Fonts.registered.get(x) ?? {};
+  const fontFaces = opts?.skipInliningFonts
+    ? []
+    : await Promise.all(
+        Array.from(fontFamilies).map(async (x) => {
+          const { fontFaces } = Fonts.registered.get(x) ?? {};
 
-      if (!Array.isArray(fontFaces)) {
-        console.error(
-          `Couldn't find registered font-faces for font-family "${x}"`,
-          Fonts.registered,
-        );
-        return;
-      }
+          if (!Array.isArray(fontFaces)) {
+            console.error(
+              `Couldn't find registered font-faces for font-family "${x}"`,
+              Fonts.registered,
+            );
+            return;
+          }
 
-      return Promise.all(
-        fontFaces.map(
-          async (font) => `@font-face {
+          return Promise.all(
+            fontFaces.map(
+              async (font) => `@font-face {
           font-family: ${font.fontFace.family};
           src: url(${await font.getContent()});
         }`,
-        ),
+            ),
+          );
+        }),
       );
-    }),
-  );
 
   svgRoot.innerHTML = `
   ${SVG_EXPORT_TAG}

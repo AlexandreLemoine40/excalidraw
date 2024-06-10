@@ -543,8 +543,7 @@
   },
   "fontList": {
     "badge": {
-      "new": "new",
-      "old": "old"
+      "new": "new"
     },
     "empty": "No fonts found"
   },
