@@ -1240,7 +1240,7 @@ describe("textWysiwyg", () => {
       expect(getOriginalContainerHeightFromCache(rectangle.id)).toBe(97);
     });
 
-    it.only("should update line height when font family updated", async () => {
+    it("should update line height when font family updated", async () => {
       Keyboard.keyPress(KEYS.ENTER);
       expect(getOriginalContainerHeightFromCache(rectangle.id)).toBe(75);
 

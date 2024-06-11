@@ -2256,12 +2256,6 @@ class App extends React.Component<AppProps, AppState> {
   );
 
   private initializeScene = async () => {
-    // FontFaceSet loadingdone event we listen on may not always
-    // fire (looking at you Safari), so on init we manually load all
-    // fonts and rerender scene text elements once done. This also
-    // seems faster even in browsers that do fire the loadingdone event.
-    this.fonts.load();
-
     if ("launchQueue" in window && "LaunchParams" in window) {
       (window as any).launchQueue.setConsumer(
         async (launchParams: { files: any[] }) => {
@@ -2335,6 +2329,12 @@ class App extends React.Component<AppProps, AppState> {
         }),
       };
     }
+
+    // FontFaceSet loadingdone event we listen on may not always
+    // fire (looking at you Safari), so on init we manually load all
+    // fonts and rerender scene text elements once done. This also
+    // seems faster even in browsers that do fire the loadingdone event.
+    this.fonts.load();
     this.resetStore();
     this.resetHistory();
     this.syncActionResult({

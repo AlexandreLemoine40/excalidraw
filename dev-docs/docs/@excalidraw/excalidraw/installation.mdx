@@ -26,13 +26,14 @@ Excalidraw depends on assets such as localization files (if you opt to use them)
 
 By default these assets are loaded from a public CDN [`https://unpkg.com/@excalidraw/excalidraw/dist/`](https://unpkg.com/@excalidraw/excalidraw/dist), so you don't need to do anything on your end.
 
-However, if you want to host these files yourself, you can find them in your `node_modules/@excalidraw/excalidraw/dist` directory, in folders `excalidraw-assets` (for production) and `excalidraw-assets-dev` (for development).
+However, if you want to host these files **yourself**, you can find them in your `node_modules/@excalidraw/excalidraw/dist` directory, in folders `excalidraw-assets` (for production) and `excalidraw-assets-dev` (for development).
 
 **Copy** these folders to your static assets directory, and add a `window.EXCALIDRAW_ASSET_PATH` variable in your `index.html`, before any `@excalidraw/excalidraw` import.
 
-For example, if you serve your assets from the root of your hostname, you would do:
+For example, if you serve your assets from the root of your CDN, you would do:
 
 ```js
+// Vanilla
 <head>
     <script>
         window.EXCALIDRAW_ASSET_PATH = "https://my.cdn.com/assets/";
@@ -40,9 +41,10 @@ For example, if you serve your assets from the root of your hostname, you would 
 </head>
 ```
 
-or dynamicly based on `window.origin`, even in your Next.js app:
+or if you prefer the path to be dynamicly set based on the `window.origin`, you could do following:
 
 ```jsx
+// Next.js
 <Script id="load-env-variables" strategy="beforeInteractive" >
     { `window["EXCALIDRAW_ASSET_PATH"] = window.origin;` }
 </Script>

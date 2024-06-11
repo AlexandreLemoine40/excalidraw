@@ -110,12 +110,9 @@ export const CLASSES = {
 };
 
 /**
- * // TODO: shouldn't be really `const`, likely neither have integers as values; let's think through possible classifications and consider:
- * - encoding font-family in the scene (not necessarily the whole content), to dynamicly load custom fonts (especially when in multiplayer)
- * - having fallbacks per family, first to other family names (i.e. Virgil to Excalifont and vice versa), then to generic family names (i.e. Cascadia to monospace)
- * - having only few decent options per generic family name
+ * // TODO: shouldn't be really `const`, likely neither have integers as values, due to value for the custom fonts, which should likely be some hash.
  *
- * resources:
+ * Let's think this through and consider:
  * - https://developer.mozilla.org/en-US/docs/Web/CSS/generic-family
  * - https://drafts.csswg.org/css-fonts-4/#font-family-prop
  * - https://learn.microsoft.com/en-us/typography/opentype/spec/ibmfc
