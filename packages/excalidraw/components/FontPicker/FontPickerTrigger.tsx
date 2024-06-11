@@ -14,7 +14,7 @@ export const FontPickerTrigger = ({
   selectedFontFamily,
 }: FontPickerTriggerProps) => {
   const isTriggerActive = useMemo(
-    () => isCustomFont(selectedFontFamily),
+    () => Boolean(selectedFontFamily && isCustomFont(selectedFontFamily)),
     [selectedFontFamily],
   );
 

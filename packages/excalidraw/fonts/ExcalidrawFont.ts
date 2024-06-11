@@ -18,7 +18,9 @@ export class ExcalidrawFont implements Font {
   constructor(family: string, uri: string, descriptors?: FontFaceDescriptors) {
     // base urls will be applied for relative `uri`'s only
     this.url = new URL(
-      import.meta.env.MODE === ENV.TEST ? uri.slice(1) : uri,
+      import.meta.env.MODE === ENV.TEST && uri.startsWith("/") // absolute paths won't work with baseurl in tests, so we are stripping it awayu
+        ? uri.slice(1)
+        : uri,
       window.EXCALIDRAW_ASSET_PATH ?? BASE_URL,
     );
 
